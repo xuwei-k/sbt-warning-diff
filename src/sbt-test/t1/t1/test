@@ -1,0 +1,16 @@
+> warningsAll
+$ exists target/warnings/warnings.json
+$ must-mirror target/warnings/warnings.json tmp/1.json
+$ copy-file target/warnings/warnings.json target/warnings/warnings-previous.json
+
+> all a1/clean a2/clean
+> warningsDiff
+$ exists target/warnings/warnings.diff
+$ touch empty
+$ must-mirror empty target/warnings/warnings.diff
+
+$ delete a1/src/main/scala/A1.scala
+$ copy-file tmp/A2.scala a2/src/test/scala/A2.scala
+> warningsAll
+> warningsDiff
+$ must-mirror target/warnings/warnings.diff tmp/warnings.diff
