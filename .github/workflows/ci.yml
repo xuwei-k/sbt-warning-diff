@@ -21,11 +21,9 @@ jobs:
       with:
         java-version: 8
         distribution: temurin
+    - name: Dump GitHub context
+      run: echo '${{ toJSON(github) }}'
     - run: sbt -v
-           scalafmtCheckAll
-           scalafmtSbtCheck
-           test
-           scripted
            warningsAll
     - if: (github.event_name == 'push') && (github.ref == 'refs/heads/main')
       uses: actions/upload-artifact@v3
