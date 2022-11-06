@@ -12,4 +12,4 @@ addSbtPlugin("com.github.xuwei-k" % "sbt-warning-diff" % "version")
 
 ### GitHub Actions example
 
-https://github.com/xuwei-k/sbt-warning-diff/blob/1104deb86a4a12/.github/workflows/ci.yml#L35-L65
+https://github.com/xuwei-k/sbt-warning-diff/blob/49693f3e270f87e76/.github/workflows/ci.yml#L29-L70
