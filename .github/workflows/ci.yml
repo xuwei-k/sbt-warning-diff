@@ -21,8 +21,6 @@ jobs:
       with:
         java-version: 8
         distribution: temurin
-    - name: Dump GitHub context
-      run: echo '${{ toJSON(github) }}'
     - run: sbt -v
            warningsAll
     - if: (github.event_name == 'push') && (github.ref == 'refs/heads/main')
