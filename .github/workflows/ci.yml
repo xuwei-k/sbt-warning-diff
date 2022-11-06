@@ -33,7 +33,7 @@ jobs:
         name: warnings.json
         path: target/warnings/warnings.json
     - id: download_previous_warnings
-      if: (github.event_name == 'pull_request_target') && ((github.base_ref == 'main') || (github.event.pull_request.base.ref == 'main'))
+      if: (github.event_name == 'pull_request_target') && ((github.base_ref == 'main') || (github.event.pull_request_target.base.ref == 'main'))
       uses: dawidd6/action-download-artifact@v2
       with:
         if_no_artifact_found: 'warn'
