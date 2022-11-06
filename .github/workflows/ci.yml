@@ -54,3 +54,17 @@ jobs:
         else
           echo "# no warnings diff" >> $GITHUB_STEP_SUMMARY
         fi
+    - uses: actions/github-script@v6
+      if: (github.event_name == 'pull_request_target') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const diff = fs.readFileSync("target/warnings/warnings.diff").toString();
+          const body = diff.length == 0 ? "No warnings diff" : "warnings diff\n\n```diff\n" + diff + "\n```";
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });
