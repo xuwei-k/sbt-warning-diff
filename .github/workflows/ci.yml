@@ -9,12 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ startsWith(github.ref, 'refs/pull/') || github.run_number }}
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
-permissions:
-  contents: read
-  checks: write
-  pull-requests: write
-  actions: read
-
 jobs:
   test:
     runs-on: ubuntu-latest
