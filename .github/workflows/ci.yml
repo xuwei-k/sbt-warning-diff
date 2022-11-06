@@ -39,21 +39,18 @@ jobs:
         if_no_artifact_found: 'warn'
         branch: ${{ github.base_ref }}
         path: target/warnings/tmp
-    - if: (github.event_name == 'pull_request_target') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
+    - if: (github.event_name == 'pull_request') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
       run: mv target/warnings/tmp/warnings.json/warnings.json target/warnings/warnings-previous.json
-    - if: (github.event_name == 'pull_request_target') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
+    - if: (github.event_name == 'pull_request') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
       run: sbt warningsDiff
-    - uses: actions/github-script@v6
-      if: (github.event_name == 'pull_request_target') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const fs = require('fs');
-          const diff = fs.readFileSync("target/warnings/warnings.diff").toString();
-          const body = diff.length == 0 ? "No warnings diff" : "warnings diff\n\n```diff\n" + diff + "\n```";
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: body
-          });
+    - if: (github.event_name == 'pull_request') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true')
+      run: |
+        if [ -s "target/warnings/warnings.diff" ]; then
+          echo "# warnings diff" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "```diff" >> $GITHUB_STEP_SUMMARY
+          cat target/warnings/warnings.diff >> $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "# no warnings diff" >> $GITHUB_STEP_SUMMARY
+        fi
