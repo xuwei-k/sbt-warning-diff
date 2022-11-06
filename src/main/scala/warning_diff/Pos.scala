@@ -18,6 +18,10 @@ case class Pos(
 )
 
 object Pos {
+  @deprecated("aaa", "xxx")
+  def aaaaaa: Int = 3
+  
+  def bbbb: Int = aaaaaa
 
   private[this] def j2s[A](j: java.util.Optional[A]): Option[A] =
     if (j.isPresent) Option(j.get) else None
