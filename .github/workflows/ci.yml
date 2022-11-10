@@ -55,7 +55,7 @@ jobs:
           echo "# no warnings diff" >> $GITHUB_STEP_SUMMARY
         fi
     - uses: actions/github-script@v6
-      if: (github.event_name == 'pull_request') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true') && (github.actor == 'xuwei-k')
+      if: (github.event_name == 'pull_request') && (github.base_ref == 'main') && (steps.download_previous_warnings.outputs.found_artifact == 'true') && (github.event.pull_request.user.login == 'xuwei-k')
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
