@@ -1,5 +1,7 @@
 # sbt-warning-diff plugin
 
+[![Latest version](https://index.scala-lang.org/xuwei-k/sbt-warning-diff/sbt-warning-diff/latest.svg)](https://index.scala-lang.org/xuwei-k/sbt-warning-diff/artifacts/sbt-warning-diff)
+
 show added/removed warnings in CI
 
 ## Setup
