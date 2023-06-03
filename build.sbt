@@ -88,3 +88,5 @@ releaseProcess := Seq[ReleaseStep](
 )
 
 publishTo := sonatypePublishToBundle.value
+
+sbtPluginPublishLegacyMavenStyle := false
