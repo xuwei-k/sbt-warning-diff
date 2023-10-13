@@ -13,7 +13,7 @@ case class Warning(message: String, position: Pos) {
 object Warning {
   def fromSbt(p: Problem): Warning = {
     Warning(
-      message = p.message(),
+      message = p.message().replaceAll("\u001B\\[[;\\d]*m", ""),
       position = Pos.fromSbt(p.position())
     )
   }
