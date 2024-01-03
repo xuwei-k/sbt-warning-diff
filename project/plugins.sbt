@@ -2,7 +2,7 @@ Compile / unmanagedSourceDirectories += baseDirectory.value.getParentFile / "src
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.21")
-addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
+addSbtPlugin("com.github.sbt" % "sbt-release" % "1.3.0")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.2.1")
 
 scalacOptions ++= Seq(
