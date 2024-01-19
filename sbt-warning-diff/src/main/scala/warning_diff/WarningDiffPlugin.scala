@@ -1,14 +1,13 @@
 package warning_diff
 
-import sbt.Keys._
-import sbt._
+import sbt.Keys.*
+import sbt.*
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
-import sjsonnew.BasicJsonProtocol._
-import sjsonnew.Builder
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
-import sjsonnew.support.scalajson.unsafe.PrettyPrinter
+import warning_diff.JsonClassOps.*
 import xsbti.Severity
 
 object WarningDiffPlugin extends AutoPlugin {
@@ -22,7 +21,7 @@ object WarningDiffPlugin extends AutoPlugin {
     val warningsPrevious = taskKey[Option[Warnings]]("")
   }
 
-  import autoImport._
+  import autoImport.*
 
   type WarningDiff = List[String]
   type Warnings = Seq[Warning]
@@ -32,21 +31,11 @@ object WarningDiffPlugin extends AutoPlugin {
     implicitly[JsonFormat[Warnings]].read(Option(json), unbuilder)
   }
 
-  private[warning_diff] implicit class JsonClassOps[A](private val self: A) extends AnyVal {
-    def toJsonString(implicit format: JsonFormat[A]): String = {
-      val builder = new Builder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-      format.write(self, builder)
-      PrettyPrinter.apply(
-        builder.result.getOrElse(sys.error("invalid json"))
-      )
-    }
-  }
-
   override def trigger = allRequirements
 
   override def requires: Plugins = JvmPlugin
 
-  private[this] val warningConfigs = Seq(Compile, Test)
+  private[warning_diff] val warningConfigs = Seq(Compile, Test)
 
   override def projectSettings: Seq[Def.Setting[?]] = warningConfigs.flatMap { x =>
     (x / warnings) := {

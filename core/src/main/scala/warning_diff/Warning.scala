@@ -1,12 +1,12 @@
 package warning_diff
 
 import sjsonnew.BasicJsonProtocol
-import sjsonnew.BasicJsonProtocol._
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import xsbti.Problem
 
 case class Warning(message: String, position: Pos) {
-  import WarningDiffPlugin._
+  import JsonClassOps.*
   override def toString = this.toJsonString
 }
 

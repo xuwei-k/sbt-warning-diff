@@ -1,0 +1,104 @@
+[{
+  "message": "type Stream in package scala is deprecated since 2.13.0: Use LazyList instead of Stream",
+  "position": {
+    "line": 2,
+    "lineContent": "  def x1: Stream[Int] = ???",
+    "offset": 21,
+    "pointer": 10,
+    "pointerSpace": "          ",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startOffset": 21,
+    "endOffset": 27,
+    "startLine": 2,
+    "startColumn": 10,
+    "endLine": 2,
+    "endColumn": 16
+  }
+}, {
+  "message": "method + in class Int is deprecated since 2.13.0: Adding a number and a String is deprecated. Use the string interpolation `s\"$num$str\"`",
+  "position": {
+    "line": 4,
+    "lineContent": "  def x2 = 1 + \"a\"",
+    "offset": 53,
+    "pointer": 13,
+    "pointerSpace": "             ",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startOffset": 51,
+    "endOffset": 54,
+    "startLine": 4,
+    "startColumn": 11,
+    "endLine": 4,
+    "endColumn": 14
+  }
+}, {
+  "message": "[UnusedTypeParams] maybe unused type param",
+  "position": {
+    "line": 5,
+    "lineContent": "  def x3[C]: Int = 3",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startLine": 5,
+    "startColumn": 9,
+    "endLine": 5,
+    "endColumn": 10
+  }
+}, {
+  "message": "[FindHoge] hogehoge",
+  "position": {
+    "line": 2,
+    "lineContent": "  case Y2(hoge: Int)",
+    "sourcePath": "${BASE}/a1/src/main/scala-3/Y.scala",
+    "startLine": 2,
+    "startColumn": 10,
+    "endLine": 2,
+    "endColumn": 14
+  }
+}, {
+  "message": "[UnusedTypeParams] maybe unused type param",
+  "position": {
+    "line": 5,
+    "lineContent": "  def x3[C]: Int = 3",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startLine": 5,
+    "startColumn": 9,
+    "endLine": 5,
+    "endColumn": 10
+  }
+}, {
+  "message": "[FindHoge] hogehoge",
+  "position": {
+    "line": 3,
+    "lineContent": "  def hoge = 3",
+    "sourcePath": "${BASE}/a1/src/main/scala-2.12/Y.scala",
+    "startLine": 3,
+    "startColumn": 6,
+    "endLine": 3,
+    "endColumn": 10
+  }
+}, {
+  "message": "method mapValues in trait MapOps is deprecated (since 2.13.0): Use .view.mapValues(f). A future version will include a strict version of this method (for now, .view.mapValues(f).toMap).",
+  "position": {
+    "line": 2,
+    "lineContent": "  def x2[X1, X2](m: Map[X1, X2]) = m.mapValues(a => a)",
+    "offset": 48,
+    "pointer": 37,
+    "pointerSpace": "                                     ",
+    "sourcePath": "${BASE}/a2/src/test/scala/A2.scala",
+    "startOffset": 46,
+    "endOffset": 57,
+    "startLine": 2,
+    "startColumn": 35,
+    "endLine": 2,
+    "endColumn": 46
+  }
+}, {
+  "message": "[FindHoge] hogehoge",
+  "position": {
+    "line": 5,
+    "lineContent": "  def hoge = \"aaa\"",
+    "sourcePath": "${BASE}/a2/src/test/scala/A2.scala",
+    "startLine": 5,
+    "startColumn": 6,
+    "endLine": 5,
+    "endColumn": 10
+  }
+}]
