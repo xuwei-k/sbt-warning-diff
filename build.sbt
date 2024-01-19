@@ -88,7 +88,3 @@ releaseProcess := Seq[ReleaseStep](
 )
 
 publishTo := sonatypePublishToBundle.value
-
-sbtPluginPublishLegacyMavenStyle := {
-  sys.env.isDefinedAt("GITHUB_ACTION") || isSnapshot.value
-}
