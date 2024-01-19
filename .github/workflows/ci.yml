@@ -25,6 +25,7 @@ jobs:
            scalafmtCheckAll
            scalafmtSbtCheck
            test
+           publishLocal
            scripted
            warningsAll
     - if: (github.event_name == 'push') && (github.ref == 'refs/heads/main')

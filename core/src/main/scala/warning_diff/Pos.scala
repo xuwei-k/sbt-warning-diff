@@ -17,7 +17,7 @@ case class Pos(
   endColumn: Option[Int]
 )
 
-object Pos {
+object Pos extends PosCompat {
 
   private[this] def j2s[A](j: java.util.Optional[A]): Option[A] =
     if (j.isPresent) Option(j.get) else None

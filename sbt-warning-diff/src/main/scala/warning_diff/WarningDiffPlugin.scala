@@ -5,11 +5,10 @@ import sbt.Keys._
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
 import sjsonnew.BasicJsonProtocol._
-import sjsonnew.Builder
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
-import sjsonnew.support.scalajson.unsafe.PrettyPrinter
 import xsbti.Severity
+import JsonClassOps._
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
@@ -30,16 +29,6 @@ object WarningDiffPlugin extends AutoPlugin {
     val unbuilder = new Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(file).get
     implicitly[JsonFormat[Warnings]].read(Option(json), unbuilder)
-  }
-
-  private[warning_diff] implicit class JsonClassOps[A](private val self: A) extends AnyVal {
-    def toJsonString(implicit format: JsonFormat[A]): String = {
-      val builder = new Builder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-      format.write(self, builder)
-      PrettyPrinter.apply(
-        builder.result.getOrElse(sys.error("invalid json"))
-      )
-    }
   }
 
   override def trigger = allRequirements
