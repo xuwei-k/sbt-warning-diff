@@ -92,9 +92,13 @@ val core = projectMatrix
         case _ =>
           "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1"
       }
-    }
+    },
+    buildInfoKeys := Seq[BuildInfoKey](version),
+    buildInfoObject := "WarningDiffBuildInfo",
+    buildInfoPackage := "warning_diff"
   )
   .defaultAxes(VirtualAxis.jvm)
+  .enablePlugins(BuildInfoPlugin)
   .jvmPlatform(
     Seq(Scala212, Scala213)
   )

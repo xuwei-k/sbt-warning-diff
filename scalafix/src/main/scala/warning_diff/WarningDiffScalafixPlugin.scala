@@ -22,6 +22,18 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
   import autoImport._
 
+  private def moduleIdToString(m: ModuleID): String = {
+    def q(s: String): String = "\"" + s + "\""
+    m.crossVersion match {
+      case _: CrossVersion.Binary =>
+        s"""${q(m.organization)} %% ${q(m.name)} % ${q(m.revision)}"""
+      case _: CrossVersion.Full =>
+        s"""${q(m.organization)} % ${q(m.name)} % ${q(m.revision)} cross CrossVersion.Full"""
+      case _ =>
+        s"""${q(m.organization)} % ${q(m.name)} % ${q(m.revision)}"""
+    }
+  }
+
   override def projectSettings: Seq[Def.Setting[?]] = WarningDiffPlugin.warningConfigs.flatMap { x =>
     Def.settings(
       (x / warningsScalafixFiles) := {
@@ -30,51 +42,53 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
       (x / warnings) ++= {
         val src = (x / warningsScalafixFiles).value.map(_.getCanonicalPath)
         val launcher = sbtLauncher.value
-        IO.withTemporaryDirectory { tmp =>
-          val input = FixInput(
-            scalafixConfig = IO.read(
-              _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
-                .getOrElse(
-                  file(".scalafix.conf")
-                )
-            ),
-            sources = src,
-            dependencies = (ThisBuild / scalafixDependencies).value.map(x =>
-              Dependency(
-                groupId = x.organization,
-                artifactId = x.name,
-                version = x.revision
-              )
-            ),
-            output = tmp.getCanonicalPath
+        if (src.nonEmpty) {
+          val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
+            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
+            "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
-          val buildSbt = Seq[String](
-            """scalaVersion := "2.13.12" """,
-            """libraryDependencies += "com.github.xuwei-k" %% "warning-diff-scalafix" % "0.1.2-SNAPSHOT" """,
-            (ThisBuild / scalafixDependencies).value
-              .map(x => s"""  "${x.organization}" %% "${x.name}" % "${x.revision}",""")
-              .mkString("libraryDependencies ++= Seq(\n", "\n", "\n)")
-          ).mkString("\n\n")
-
-          println(buildSbt)
-
-          IO.write(tmp / "build.sbt", buildSbt)
-          IO.write(tmp / "input.json", input.toJsonString)
-          val exitCode = Fork.java.apply(
-            ForkOptions().withWorkingDirectory(tmp),
-            Seq(
-              "-jar",
-              launcher.getCanonicalPath,
-              "runMain warning_diff.ScalafixWarning"
+          IO.withTemporaryDirectory { tmp =>
+            val input = FixInput(
+              scalafixConfig = IO.read(
+                _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
+                  .getOrElse(
+                    file(".scalafix.conf")
+                  )
+              ),
+              sources = src,
+              output = tmp.getCanonicalPath
             )
-          )
-          assert(exitCode == 0, s"exit code = $exitCode")
-          val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-          val json = {
-            val output = IO.read(tmp / "output.json")
-            sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+            val buildSbt = Seq[String](
+              """scalaVersion := "2.13.12" """,
+              deps
+                .map(moduleIdToString)
+                .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
+            ).mkString("\n\n")
+
+            println(buildSbt)
+
+            IO.write(tmp / "build.sbt", buildSbt)
+            IO.write(tmp / "input.json", input.toJsonString)
+            val exitCode = Fork.java.apply(
+              ForkOptions().withWorkingDirectory(tmp),
+              Seq(
+                "-jar",
+                launcher.getCanonicalPath,
+                "runMain warning_diff.ScalafixWarning"
+              )
+            )
+            assert(exitCode == 0, s"exit code = $exitCode")
+            val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
+            val json = {
+              val output = IO.read(tmp / "output.json")
+              sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+            }
+            val res = implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
+            println(res)
+            res
           }
-          implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
+        } else {
+          Nil
         }
       }
     )

@@ -17,6 +17,7 @@ object ScalafixWarning {
   def main(args: Array[String]): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val jsonString = Files.readAllLines(new File("input.json").toPath).asScala.mkString("\n")
+    println("input = " + jsonString)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
     val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val confRules = ConfigFactory.parseString(input.scalafixConfig).getStringList("rules").asScala.toSet
@@ -24,19 +25,21 @@ object ScalafixWarning {
     val syntactics = allRules.iterator().asScala.collect { case x: SyntacticRule => x }.toList
     val runRules = syntactics.filter(x => confRules(x.name.value))
     val sourceFileNames = input.sources
-    println(runRules)
+    println("run rules = " + runRules)
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
       val src = new String(Files.readAllBytes(new File(sourceFileName).toPath), StandardCharsets.UTF_8)
+      println("src = " + src)
       val input = scala.meta.Input.VirtualFile(sourceFileName, src)
       val doc = SyntacticDocument.fromInput(input, ScalaVersion.scala3)
       val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
-      scalafix.internal.patch.PatchInternals
+      val xxx = scalafix.internal.patch.PatchInternals
         .syntactic(
           map,
           doc,
           false
         )
-        .diagnostics
+      println(xxx)
+      xxx.diagnostics
     }
     println(diagnostics.size)
     diagnostics.foreach(println)
