@@ -1,5 +1,9 @@
 import ReleaseTransformations._
 
+def Scala212 = "2.12.18"
+def Scala213 = "2.13.12"
+def Scala3 = "3.3.1"
+
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
 }
@@ -79,6 +83,7 @@ val pluginSettings = Def.settings(
 val core = projectMatrix
   .settings(
     commonSettings,
+    name := "warning-diff-core",
     libraryDependencies += "org.scala-sbt" % "util-interface" % sbtVersion.value,
     libraryDependencies += {
       scalaBinaryVersion.value match {
@@ -87,11 +92,15 @@ val core = projectMatrix
         case _ =>
           "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1"
       }
-    }
+    },
+    buildInfoKeys := Seq[BuildInfoKey](version),
+    buildInfoObject := "WarningDiffBuildInfo",
+    buildInfoPackage := "warning_diff"
   )
   .defaultAxes(VirtualAxis.jvm)
+  .enablePlugins(BuildInfoPlugin)
   .jvmPlatform(
-    Seq("2.12.18", "2.13.12", "3.3.1")
+    Seq(Scala212, Scala213)
   )
 
 val plugin = project
@@ -104,3 +113,29 @@ val plugin = project
   .dependsOn(
     LocalProject("core2_12")
   )
+
+val scalafixPlugin = project
+  .in(file("scalafix"))
+  .enablePlugins(SbtPlugin)
+  .settings(
+    pluginSettings,
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.11.1"),
+    name := "warning-diff-scalafix-plugin"
+  )
+  .dependsOn(plugin)
+
+val fix = projectMatrix
+  .in(file("fix"))
+  .settings(
+    commonSettings,
+    name := "warning-diff-scalafix",
+    libraryDependencies += "org.scala-sbt" %% "io" % "1.9.8",
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.11.1"
+  )
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala213)
+  )
+  .dependsOn(core)
+
+publish / skip := true

@@ -35,7 +35,7 @@ object WarningDiffPlugin extends AutoPlugin {
 
   override def requires: Plugins = JvmPlugin
 
-  private[this] val warningConfigs = Seq(Compile, Test)
+  private[warning_diff] val warningConfigs = Seq(Compile, Test)
 
   override def projectSettings: Seq[Def.Setting[?]] = warningConfigs.flatMap { x =>
     (x / warnings) := {
