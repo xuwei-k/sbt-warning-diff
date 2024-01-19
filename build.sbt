@@ -79,6 +79,7 @@ val pluginSettings = Def.settings(
 val core = projectMatrix
   .settings(
     commonSettings,
+    name := "warning-diff-core",
     libraryDependencies += "org.scala-sbt" % "util-interface" % sbtVersion.value,
     libraryDependencies += {
       scalaBinaryVersion.value match {
@@ -104,3 +105,5 @@ val plugin = project
   .dependsOn(
     LocalProject("core2_12")
   )
+
+publish / skip := true
