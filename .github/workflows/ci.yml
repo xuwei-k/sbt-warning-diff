@@ -1,8 +1,6 @@
 on:
   pull_request:
   push:
-    branches:
-      - main
 
 # https://github.community/t/concurrency-cancel-in-progress-but-not-when-ref-is-master/194707/4
 concurrency:
@@ -26,6 +24,7 @@ jobs:
            scalafmtSbtCheck
            "scalafixAll --check"
            test
+           publishLocal
            scripted
            warningsAll
     - if: (github.event_name == 'push') && (github.ref == 'refs/heads/main')

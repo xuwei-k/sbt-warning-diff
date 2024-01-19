@@ -5,11 +5,10 @@ import sbt._
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
 import sjsonnew.BasicJsonProtocol._
-import sjsonnew.Builder
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
-import sjsonnew.support.scalajson.unsafe.PrettyPrinter
 import xsbti.Severity
+import JsonClassOps._
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
@@ -32,21 +31,11 @@ object WarningDiffPlugin extends AutoPlugin {
     implicitly[JsonFormat[Warnings]].read(Option(json), unbuilder)
   }
 
-  private[warning_diff] implicit class JsonClassOps[A](private val self: A) extends AnyVal {
-    def toJsonString(implicit format: JsonFormat[A]): String = {
-      val builder = new Builder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-      format.write(self, builder)
-      PrettyPrinter.apply(
-        builder.result.getOrElse(sys.error("invalid json"))
-      )
-    }
-  }
-
   override def trigger = allRequirements
 
   override def requires: Plugins = JvmPlugin
 
-  private[this] val warningConfigs = Seq(Compile, Test)
+  private[warning_diff] val warningConfigs = Seq(Compile, Test)
 
   override def projectSettings: Seq[Def.Setting[?]] = warningConfigs.flatMap { x =>
     (x / warnings) := {
@@ -149,7 +138,7 @@ object WarningDiffPlugin extends AutoPlugin {
       (LocalRootProject / warningsCurrentFile).?.value match {
         case Some(f) =>
           streams.value.log.info(s"write to ${f}")
-          IO.write(f, result.toJsonString)
+          IO.write(f, result.toJsonString + "\n")
         case None =>
           streams.value.log.warn(s"${warningsDiffFile.key.label} undefined")
       }

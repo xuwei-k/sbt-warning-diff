@@ -6,7 +6,7 @@ import sjsonnew.JsonFormat
 import xsbti.Problem
 
 case class Warning(message: String, position: Pos) {
-  import WarningDiffPlugin._
+  import JsonClassOps._
   override def toString = this.toJsonString
 }
 
