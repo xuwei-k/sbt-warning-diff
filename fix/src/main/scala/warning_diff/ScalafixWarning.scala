@@ -10,19 +10,21 @@ import scalafix.internal.config.ScalaVersion
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
 import com.typesafe.config.ConfigFactory
+import sjsonnew.JsonReader
 import scala.meta.inputs.Input
 
 object ScalafixWarning {
   def main(args: Array[String]): Unit = {
-    val confRules = ConfigFactory.parseFile(new File(".scalafix.conf")).getStringList("rules").asScala.toSet
+    val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
+    val jsonString = Files.readAllLines(new File("input.json").toPath).asScala.mkString("\n")
+    val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
+    val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
+    val confRules = ConfigFactory.parseString(input.scalafixConfig).getStringList("rules").asScala.toSet
     val allRules = java.util.ServiceLoader.load(classOf[scalafix.v1.Rule])
     val syntactics = allRules.iterator().asScala.collect { case x: SyntacticRule => x }.toList
     val runRules = syntactics.filter(x => confRules(x.name.value))
-    val sourceFileNames =
-      scala.io.Source.fromInputStream(this.getClass.getResourceAsStream("/source-files.txt")).getLines().toList
-
+    val sourceFileNames = input.sources
     println(runRules)
-
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
       val src = new String(Files.readAllBytes(new File(sourceFileName).toPath), StandardCharsets.UTF_8)
       val input = scala.meta.Input.VirtualFile(sourceFileName, src)
@@ -49,7 +51,7 @@ object ScalafixWarning {
 
     Files
       .write(
-        new File("target", "scalafix-result.txt").toPath,
+        new File(new File(input.output), "output.json").toPath,
         result.toJsonString.getBytes(StandardCharsets.UTF_8)
       )
   }

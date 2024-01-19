@@ -96,7 +96,7 @@ val core = projectMatrix
   )
   .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(
-    Seq(Scala212, Scala213, Scala3)
+    Seq(Scala212, Scala213)
   )
 
 val plugin = project
