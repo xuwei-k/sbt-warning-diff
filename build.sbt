@@ -1,5 +1,9 @@
 import ReleaseTransformations._
 
+def Scala212 = "2.12.18"
+def Scala213 = "2.13.12"
+def Scala3 = "3.3.1"
+
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
 }
@@ -92,7 +96,7 @@ val core = projectMatrix
   )
   .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(
-    Seq("2.12.18", "2.13.12", "3.3.1")
+    Seq(Scala212, Scala213, Scala3)
   )
 
 val plugin = project
@@ -105,5 +109,28 @@ val plugin = project
   .dependsOn(
     LocalProject("core2_12")
   )
+
+val scalafixPlugin = project
+  .in(file("scalafix"))
+  .enablePlugins(SbtPlugin)
+  .settings(
+    pluginSettings,
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.11.1"),
+    name := "warning-diff-scalafix-plugin"
+  )
+  .dependsOn(plugin)
+
+val fix = projectMatrix
+  .in(file("fix"))
+  .settings(
+    commonSettings,
+    name := "warning-diff-scalafix",
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.11.1"
+  )
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala213)
+  )
+  .dependsOn(core)
 
 publish / skip := true
