@@ -37,6 +37,19 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     }
   }
 
+  private val subProjects: Def.Initialize[Task[List[ResolvedProject]]] = Def.task {
+    val extracted = Project.extract(state.value)
+    val currentBuildUri = extracted.currentRef.build
+    extracted.structure.units
+      .apply(currentBuildUri)
+      .defined
+      .values
+      .filter(
+        _.autoPlugins.contains(WarningDiffScalafixPlugin)
+      )
+      .toList
+  }
+
   override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
     ThisBuild / warningsScalafixDialect := {
       (LocalRootProject / scalaBinaryVersion).value match {
@@ -64,16 +77,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     },
     ThisBuild / warningsScalafix := Def.taskDyn {
       val src: Seq[File] = Def.taskDyn {
-        val extracted = Project.extract(state.value)
-        val currentBuildUri = extracted.currentRef.build
-        extracted.structure.units
-          .apply(currentBuildUri)
-          .defined
-          .values
-          .filter(
-            _.autoPlugins.contains(WarningDiffScalafixPlugin)
-          )
-          .toList
+        subProjects.value
           .flatMap { p =>
             WarningDiffPlugin.warningConfigs.map { x =>
               LocalProject(p.id) / x / warningsScalafixFiles
@@ -89,20 +93,9 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
           val scalafixProducts: Seq[File] = Def
             .taskDyn {
-              val extracted = Project.extract(state.value)
-              val currentBuildUri = extracted.currentRef.build
-              extracted.structure.units
-                .apply(currentBuildUri)
-                .defined
-                .values
-                .filter(
-                  _.autoPlugins.contains(WarningDiffScalafixPlugin)
-                )
-                .toList
-                .map { p =>
-                  LocalProject(p.id) / ScalafixConfig / products
-                }
-                .join
+              subProjects.value.map { p =>
+                LocalProject(p.id) / ScalafixConfig / products
+              }.join
             }
             .value
             .flatten
