@@ -24,6 +24,7 @@ jobs:
     - run: sbt -v
            scalafmtCheckAll
            scalafmtSbtCheck
+           "scalafixAll --check"
            test
            scripted
            warningsAll
