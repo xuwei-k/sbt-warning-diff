@@ -44,16 +44,15 @@ object ScalafixWarning {
           false
         )
       println(xxx)
-      xxx.diagnostics
+      xxx.diagnostics.map(input -> _)
     }
     println(diagnostics.size)
     diagnostics.foreach(println)
     val result = diagnostics
-      .map(_.diagnostic)
       .map { x =>
         warning_diff.Warning(
-          message = x.message,
-          position = convertPosition(x.position)
+          message = x._2.message,
+          position = convertPosition(x._1, x._2.position)
         )
       }
 
@@ -64,14 +63,14 @@ object ScalafixWarning {
       )
   }
 
-  private def convertPosition(p: scala.meta.Position): Pos = {
+  private def convertPosition(input: Input.VirtualFile, p: scala.meta.Position): Pos = {
     Pos(
       line = Some(p.startLine),
-      lineContent = p.text,
+      lineContent = input.value.linesIterator.drop(p.startLine).next(),
       offset = None,
       pointer = None,
-      pointerSpace = None,
-      sourcePath = Option(p.input).collect { case x: Input.VirtualFile => x.path },
+      pointerSpace = None, // TODO
+      sourcePath = Some(input.path),
       startOffset = None,
       endOffset = None,
       startLine = Some(p.startLine),

@@ -1,4 +1,4 @@
-1,6d0
+1,9d0
 < ${BASE}/a1/src/main/scala/A1.scala
 <   def x1: Stream[Int] = ???
 < type Stream in package scala is deprecated (since 2.13.0): Use LazyList instead of Stream
@@ -6,7 +6,7 @@
 <   def x2 = 1 + "a"
 < method + in class Int is deprecated (since 2.13.0): Adding a number and a String is deprecated. Use the string interpolation `s"$num$str"`
 < ${BASE}/a1/src/main/scala/A1.scala
-< C
+<   def x3[C]: Int = 3
 < maybe unused type param
 12a4,6
 > ${BASE}/a2/src/test/scala/A2.scala
