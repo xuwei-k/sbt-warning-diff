@@ -86,11 +86,9 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
           "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
         )
 
-        println("scalafixProducts = " + scalafixProducts)
-
         IO.withTemporaryDirectory { tmp =>
-          scalafixProducts.filter(_.isFile).foreach { f =>
-            IO.copyFile(f, tmp / "lib_managed" / f.getName)
+          scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
+            IO.copyFile(f, tmp / "lib" / f.getName)
           }
           val input = FixInput(
             scalafixConfig = IO.read(

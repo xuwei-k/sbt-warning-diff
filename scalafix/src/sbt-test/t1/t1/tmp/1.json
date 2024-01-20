@@ -57,4 +57,15 @@
     "endLine": 2,
     "endColumn": 46
   }
+}, {
+  "message": "hogehoge",
+  "position": {
+    "line": 9,
+    "lineContent": "  def hoge = \"aaa\"",
+    "sourcePath": "${BASE}/a2/src/test/scala/A2.scala",
+    "startLine": 9,
+    "startColumn": 6,
+    "endLine": 9,
+    "endColumn": 10
+  }
 }]

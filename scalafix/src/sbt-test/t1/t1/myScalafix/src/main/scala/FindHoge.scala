@@ -15,7 +15,7 @@ class FindHoge extends SyntacticRule("FindHoge") {
           id = "",
           message = "hogehoge",
           position = t.pos,
-          severity = LintSeverity.Error
+          severity = LintSeverity.Warning
         )
       )
     }.asPatch
