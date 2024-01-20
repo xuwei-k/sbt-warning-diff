@@ -4,8 +4,6 @@ import sbt.io.IO
 import sjsonnew.BasicJsonProtocol._
 import warning_diff.JsonClassOps._
 import java.io.File
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import scala.jdk.CollectionConverters._
 import scalafix.internal.config.ScalaVersion
 import scalafix.v1.SyntacticDocument
@@ -17,7 +15,7 @@ import scala.meta.inputs.Input
 object ScalafixWarning {
   def main(args: Array[String]): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-    val jsonString = Files.readAllLines(new File("input.json").toPath).asScala.mkString("\n")
+    val jsonString = IO.read(new File("input.json"))
     println("input = " + jsonString)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
     val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
@@ -29,7 +27,7 @@ object ScalafixWarning {
     val sourceFileNames = input.sources
     println("run rules = " + runRules)
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
-      val src = new String(Files.readAllBytes(new File(sourceFileName).toPath), StandardCharsets.UTF_8)
+      val src = IO.read(new File(sourceFileName))
       println("src = " + src)
       val input = scala.meta.Input.VirtualFile(
         "${BASE}/" + IO.relativize(base, new File(sourceFileName)).getOrElse(sys.error(s"${base} ${sourceFileName}")),
@@ -56,11 +54,10 @@ object ScalafixWarning {
         )
       }
 
-    Files
-      .write(
-        new File(new File(input.output), "output.json").toPath,
-        result.toJsonString.getBytes(StandardCharsets.UTF_8)
-      )
+    IO.write(
+      new File(new File(input.output), "output.json"),
+      result.toJsonString
+    )
   }
 
   private def convertPosition(input: Input.VirtualFile, p: scala.meta.Position): Pos = {
