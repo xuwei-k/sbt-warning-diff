@@ -26,8 +26,23 @@ object ScalafixWarning {
     val base = new File(in.base)
     val confRules = ConfigFactory.parseString(in.scalafixConfig).getStringList("rules").asScala.toSet
     val allRules = scalafix.internal.v1.Rules.all()
-    val syntactics = allRules.collect { case x: SyntacticRule => x } // only support SyntacticRule
-    val runRules = syntactics.filter(x => confRules(x.name.value))
+    val runRules = allRules
+      .collect {
+        case x if confRules(x.name.value) =>
+          x.withConfiguration(
+            scalafix.v1.Configuration
+              .apply()
+              .withConf(
+                metaconfig.Conf.parseString(in.scalafixConfig)(metaconfig.Hocon).get
+              )
+              // TODO add scalaVersion and scalacOptions ?
+          ).get
+      }
+      .collect {
+        case x: SyntacticRule =>
+          // only support SyntacticRule
+          x
+      }
     val sourceFileNames = in.sources
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
       val src = IO.read(new File(sourceFileName))
