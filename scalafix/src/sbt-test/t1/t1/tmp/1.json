@@ -31,7 +31,7 @@
     "endColumn": 14
   }
 }, {
-  "message": "maybe unused type param",
+  "message": "[UnusedTypeParams] maybe unused type param",
   "position": {
     "line": 5,
     "lineContent": "  def x3[C]: Int = 3",
@@ -58,7 +58,7 @@
     "endColumn": 46
   }
 }, {
-  "message": "hogehoge",
+  "message": "[FindHoge] hogehoge",
   "position": {
     "line": 9,
     "lineContent": "  def hoge = \"aaa\"",

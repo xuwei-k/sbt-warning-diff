@@ -44,7 +44,7 @@ object ScalafixWarning {
     val result = diagnostics
       .map { x =>
         warning_diff.Warning(
-          message = x._2.message,
+          message = s"[${x._2.id.fullID}] ${x._2.message}",
           position = convertPosition(x._1, x._2.position)
         )
       }
