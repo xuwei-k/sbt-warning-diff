@@ -50,7 +50,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
           .toList
           .flatMap { p =>
             WarningDiffPlugin.warningConfigs.map { x =>
-              (LocalProject(p.id) / x / warningsScalafixFiles)
+              LocalProject(p.id) / x / warningsScalafixFiles
             }
           }
           .join
