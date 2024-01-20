@@ -6,14 +6,16 @@ import sjsonnew.JsonFormat
 case class FixInput(
   scalafixConfig: String,
   sources: Seq[String],
+  base: String,
   output: String
 )
 
 object FixInput {
   implicit val instance: JsonFormat[FixInput] =
-    caseClass3(FixInput.apply, FixInput.unapply)(
+    caseClass4(FixInput.apply, FixInput.unapply)(
       "scalafix-config",
       "sources",
+      "base",
       "output"
     )
 }

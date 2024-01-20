@@ -1,5 +1,6 @@
 package warning_diff
 
+import sbt.io.IO
 import sjsonnew.BasicJsonProtocol._
 import warning_diff.JsonClassOps._
 import java.io.File
@@ -20,6 +21,7 @@ object ScalafixWarning {
     println("input = " + jsonString)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
     val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
+    val base = new File(input.base)
     val confRules = ConfigFactory.parseString(input.scalafixConfig).getStringList("rules").asScala.toSet
     val allRules = java.util.ServiceLoader.load(classOf[scalafix.v1.Rule])
     val syntactics = allRules.iterator().asScala.collect { case x: SyntacticRule => x }.toList
@@ -29,7 +31,10 @@ object ScalafixWarning {
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
       val src = new String(Files.readAllBytes(new File(sourceFileName).toPath), StandardCharsets.UTF_8)
       println("src = " + src)
-      val input = scala.meta.Input.VirtualFile(sourceFileName, src)
+      val input = scala.meta.Input.VirtualFile(
+        "${BASE}/" + IO.relativize(base, new File(sourceFileName)).getOrElse(sys.error(s"${base} ${sourceFileName}")),
+        src
+      )
       val doc = SyntacticDocument.fromInput(input, ScalaVersion.scala3)
       val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
       val xxx = scalafix.internal.patch.PatchInternals

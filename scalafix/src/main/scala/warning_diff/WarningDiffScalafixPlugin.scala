@@ -56,8 +56,10 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
                   )
               ),
               sources = src,
+              base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
               output = tmp.getCanonicalPath
             )
+
             val buildSbt = Seq[String](
               """scalaVersion := "2.13.12" """,
               deps
