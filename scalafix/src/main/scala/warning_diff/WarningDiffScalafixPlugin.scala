@@ -9,7 +9,6 @@ import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
 import sjsonnew.BasicJsonProtocol._
 import sjsonnew.JsonReader
 import warning_diff.JsonClassOps._
-import warning_diff.WarningDiffPlugin.Warnings
 import warning_diff.WarningDiffPlugin.autoImport._
 
 object WarningDiffScalafixPlugin extends AutoPlugin {
@@ -19,7 +18,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
   object autoImport {
     val warningsScalafixConfig = taskKey[FixInput.SubProject]("")
-    val warningsScalafix = taskKey[Warnings]("")
+    val warningsScalafix = taskKey[Seq[FixOutput]]("")
   }
 
   import autoImport._
@@ -75,6 +74,8 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             Dialect.Scala213Source3
         }
         FixInput.SubProject(
+          projectId = thisProject.value.id,
+          sbtConfig = x.id,
           scalafixConfig = IO.read(
             _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
               .getOrElse(
@@ -148,24 +149,23 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               val output = IO.read(tmp / "output.json")
               sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
             }
-            implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
+            implicitly[JsonReader[Seq[FixOutput]]].read(Some(json), unbuilder)
           }
         }
       } else {
-        Def.task(Seq.empty[Warning])
+        Def.task(Seq.empty[FixOutput])
       }
     }.value,
     WarningDiffPlugin.warningConfigs.flatMap { x =>
       Def.settings(
         (x / warnings) ++= {
-          val all = (ThisBuild / warningsScalafix).value
-          val base = (LocalRootProject / baseDirectory).value
-          val files = (x / warningsScalafixConfig).value.sources.flatMap { x =>
-            IO.relativize(base = base, file = file(x)).map("${BASE}/" + _)
-          }.toSet
-          all.map(x => (x, x.position.sourcePath)).collect {
-            case (x, Some(path)) if files(path) => x
-          }
+          (ThisBuild / warningsScalafix).value
+            .collect {
+              case y if (y.projectId == thisProject.value.id) && (y.sbtConfig == x.id) =>
+                y.warnings
+            }
+            .flatten
+            .filter(_.position.sourcePath.nonEmpty)
         }
       )
     }

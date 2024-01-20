@@ -24,7 +24,7 @@ object ScalafixWarning {
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
     val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val base = new File(in.base)
-    val result = in.projects.flatMap { proj =>
+    val result = in.projects.map { proj =>
       val confRules = ConfigFactory.parseString(proj.scalafixConfig).getStringList("rules").asScala.toSet
       val allRules = scalafix.internal.v1.Rules.all()
       val runRules = allRules
@@ -66,13 +66,17 @@ object ScalafixWarning {
           .diagnostics
           .map(x => Result(input = input, diagnostic = x))
       }
-      diagnostics
-        .map { x =>
+
+      FixOutput(
+        projectId = proj.projectId,
+        sbtConfig = proj.sbtConfig,
+        warnings = diagnostics.map { x =>
           warning_diff.Warning(
             message = s"[${x.diagnostic.id.fullID}] ${x.diagnostic.message}",
             position = convertPosition(x.input, x.diagnostic.position)
           )
         }
+      )
     }
 
     IO.write(

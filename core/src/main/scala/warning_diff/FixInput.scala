@@ -12,6 +12,8 @@ case class FixInput(
 
 object FixInput {
   case class SubProject(
+    projectId: String,
+    sbtConfig: String,
     scalafixConfig: String,
     sources: Seq[String],
     scalacOptions: Seq[String],
@@ -21,7 +23,9 @@ object FixInput {
 
   object SubProject {
     implicit val instance: JsonFormat[SubProject] =
-      caseClass5(apply, unapply)(
+      caseClass7(apply, unapply)(
+        "project-id",
+        "sbt-config",
         "scalafix-config",
         "sources",
         "scalac-options",
