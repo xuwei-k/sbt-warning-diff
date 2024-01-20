@@ -23,8 +23,8 @@ object ScalafixWarning {
     val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val base = new File(input.base)
     val confRules = ConfigFactory.parseString(input.scalafixConfig).getStringList("rules").asScala.toSet
-    val allRules = java.util.ServiceLoader.load(classOf[scalafix.v1.Rule])
-    val syntactics = allRules.iterator().asScala.collect { case x: SyntacticRule => x }.toList
+    val allRules = scalafix.internal.v1.Rules.all()
+    val syntactics = allRules.collect { case x: SyntacticRule => x }
     val runRules = syntactics.filter(x => confRules(x.name.value))
     val sourceFileNames = input.sources
     println("run rules = " + runRules)
