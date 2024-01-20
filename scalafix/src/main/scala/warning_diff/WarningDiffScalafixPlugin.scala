@@ -18,6 +18,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
   object autoImport {
     val warningsScalafixFiles = taskKey[Seq[File]]("")
+    val warningsScalafix = taskKey[Warnings]("")
   }
 
   import autoImport._
@@ -34,67 +35,98 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     }
   }
 
-  override def projectSettings: Seq[Def.Setting[?]] = WarningDiffPlugin.warningConfigs.flatMap { x =>
-    Def.settings(
-      (x / warningsScalafixFiles) := {
-        (x / unmanagedSources).value.filter(_.getName.endsWith(".scala"))
-      },
-      (x / warnings) ++= {
-        val src = (x / warningsScalafixFiles).value.map(_.getCanonicalPath)
-        val launcher = sbtLauncher.value
-        if (src.nonEmpty) {
-          val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
-            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
-            "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
+  override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
+    ThisBuild / warningsScalafix := {
+      val src: Seq[File] = Def.taskDyn {
+        val extracted = Project.extract(state.value)
+        val currentBuildUri = extracted.currentRef.build
+        extracted.structure.units
+          .apply(currentBuildUri)
+          .defined
+          .values
+          .filter(
+            _.autoPlugins.contains(WarningDiffScalafixPlugin)
           )
-          IO.withTemporaryDirectory { tmp =>
-            val input = FixInput(
-              scalafixConfig = IO.read(
-                _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
-                  .getOrElse(
-                    file(".scalafix.conf")
-                  )
-              ),
-              sources = src,
-              base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
-              output = tmp.getCanonicalPath
-            )
-
-            val buildSbt = Seq[String](
-              """scalaVersion := "2.13.12" """,
-              deps
-                .map(moduleIdToString)
-                .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
-            ).mkString("\n\n")
-
-            println(buildSbt)
-
-            IO.write(tmp / "build.sbt", buildSbt)
-            IO.write(tmp / "input.json", input.toJsonString)
-            val exitCode = Fork.java.apply(
-              ForkOptions().withWorkingDirectory(tmp),
-              Seq(
-                "-jar",
-                launcher.getCanonicalPath,
-                "runMain warning_diff.ScalafixWarning"
-              )
-            )
-            assert(exitCode == 0, s"exit code = $exitCode")
-            val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-            val json = {
-              val output = IO.read(tmp / "output.json")
-              sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+          .toList
+          .flatMap { p =>
+            WarningDiffPlugin.warningConfigs.map { x =>
+              (LocalProject(p.id) / x / warningsScalafixFiles)
             }
-            val res = implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
-            println(res)
-            res
           }
-        } else {
-          Nil
+          .join
+          .map(_.flatten)
+      }.value
+
+      val launcher = sbtLauncher.value
+      if (src.nonEmpty) {
+        val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
+          "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
+          "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
+        )
+        IO.withTemporaryDirectory { tmp =>
+          val input = FixInput(
+            scalafixConfig = IO.read(
+              _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
+                .getOrElse(
+                  file(".scalafix.conf")
+                )
+            ),
+            sources = src.map(_.getCanonicalPath),
+            base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
+            output = tmp.getCanonicalPath
+          )
+
+          val buildSbt = Seq[String](
+            """scalaVersion := "2.13.12" """,
+            deps
+              .map(moduleIdToString)
+              .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
+          ).mkString("\n\n")
+
+          println(buildSbt)
+
+          IO.write(tmp / "build.sbt", buildSbt)
+          IO.write(tmp / "input.json", input.toJsonString)
+          val exitCode = Fork.java.apply(
+            ForkOptions().withWorkingDirectory(tmp),
+            Seq(
+              "-jar",
+              launcher.getCanonicalPath,
+              "runMain warning_diff.ScalafixWarning"
+            )
+          )
+          assert(exitCode == 0, s"exit code = $exitCode")
+          val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
+          val json = {
+            val output = IO.read(tmp / "output.json")
+            sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+          }
+          val res = implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
+          println(res)
+          res
         }
+      } else {
+        Nil
       }
-    )
-  }
+    },
+    WarningDiffPlugin.warningConfigs.flatMap { x =>
+      Def.settings(
+        (x / warningsScalafixFiles) := {
+          (x / unmanagedSources).value.filter(_.getName.endsWith(".scala"))
+        },
+        (x / warnings) ++= {
+          val all = (ThisBuild / warningsScalafix).value
+          val base = (LocalRootProject / baseDirectory).value
+          val files = (x / warningsScalafixFiles).value.flatMap { x =>
+            IO.relativize(base = base, file = x).map("${BASE}/" + _)
+          }.toSet
+          all.map(x => (x, x.position.sourcePath)).collect {
+            case (x, Some(path)) if files(path) => x
+          }
+        }
+      )
+    }
+  )
 
   private[this] def getJarFiles(module: ModuleID): Def.Initialize[Task[Seq[File]]] = Def.task {
     dependencyResolution.value
