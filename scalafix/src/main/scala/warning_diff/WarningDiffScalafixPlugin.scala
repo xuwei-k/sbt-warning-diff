@@ -1,16 +1,16 @@
 package warning_diff
 
+import java.io.File
 import sbt.Keys._
 import sbt._
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
+import sjsonnew.BasicJsonProtocol._
 import sjsonnew.JsonReader
 import warning_diff.JsonClassOps._
 import warning_diff.WarningDiffPlugin.Warnings
 import warning_diff.WarningDiffPlugin.autoImport._
-import java.io.File
-import sjsonnew.BasicJsonProtocol._
 
 object WarningDiffScalafixPlugin extends AutoPlugin {
   override def requires: Plugins = WarningDiffPlugin && ScalafixPlugin

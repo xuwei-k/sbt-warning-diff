@@ -1,14 +1,14 @@
 package warning_diff
 
-import sbt._
 import sbt.Keys._
+import sbt._
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
 import sjsonnew.BasicJsonProtocol._
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
+import warning_diff.JsonClassOps._
 import xsbti.Severity
-import JsonClassOps._
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
