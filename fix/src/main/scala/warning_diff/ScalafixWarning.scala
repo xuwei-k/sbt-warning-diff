@@ -24,52 +24,56 @@ object ScalafixWarning {
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
     val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val base = new File(in.base)
-    val confRules = ConfigFactory.parseString(in.scalafixConfig).getStringList("rules").asScala.toSet
-    val allRules = scalafix.internal.v1.Rules.all()
-    val runRules = allRules
-      .collect {
-        case x if confRules(x.name.value) =>
-          x.withConfiguration(
-            scalafix.v1.Configuration
-              .apply()
-              .withConf(
-                metaconfig.Conf.parseString(in.scalafixConfig)(metaconfig.Hocon).get
-              )
-              // TODO add scalaVersion and scalacOptions ?
-          ).get
-      }
-      .collect {
-        case x: SyntacticRule =>
-          // only support SyntacticRule
-          x
-      }
-    val sourceFileNames = in.sources
-    val diagnostics = sourceFileNames.flatMap { sourceFileName =>
-      val src = IO.read(new File(sourceFileName))
-      val input = scala.meta.Input.VirtualFile(
-        "${BASE}/" + IO.relativize(base, new File(sourceFileName)).getOrElse(sys.error(s"${base} ${sourceFileName}")),
-        src
-      )
-      val parse = implicitly[scala.meta.parsers.Parse[scala.meta.Source]]
-      val tree = parse.apply(input = input, dialect = convertDialect(in.dialect)).get
-      val doc = SyntacticDocument.fromTree(tree)
-      val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
-      scalafix.internal.patch.PatchInternals
-        .syntactic(
-          map,
-          doc,
-          false
+    val result = in.projects.flatMap { proj =>
+      val confRules = ConfigFactory.parseString(proj.scalafixConfig).getStringList("rules").asScala.toSet
+      val allRules = scalafix.internal.v1.Rules.all()
+      val runRules = allRules
+        .collect {
+          case x if confRules(x.name.value) =>
+            x.withConfiguration(
+              scalafix.v1.Configuration
+                .apply()
+                .withConf(
+                  metaconfig.Conf.parseString(proj.scalafixConfig)(metaconfig.Hocon).get
+                )
+                .withScalacOptions(proj.scalacOptions.toList)
+                .withScalaVersion(proj.scalaVersion)
+                // TODO add scalaVersion and scalacOptions ?
+            ).get
+        }
+        .collect {
+          case x: SyntacticRule =>
+            // only support SyntacticRule
+            x
+        }
+      val sourceFileNames = proj.sources
+      val diagnostics = sourceFileNames.flatMap { sourceFileName =>
+        val src = IO.read(new File(sourceFileName))
+        val input = scala.meta.Input.VirtualFile(
+          "${BASE}/" + IO.relativize(base, new File(sourceFileName)).getOrElse(sys.error(s"${base} ${sourceFileName}")),
+          src
         )
-        .diagnostics
-        .map(x => Result(input = input, diagnostic = x))
+        val parse = implicitly[scala.meta.parsers.Parse[scala.meta.Source]]
+        val tree = parse.apply(input = input, dialect = convertDialect(proj.dialect)).get
+        val doc = SyntacticDocument.fromTree(tree)
+        val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
+        scalafix.internal.patch.PatchInternals
+          .syntactic(
+            map,
+            doc,
+            false
+          )
+          .diagnostics
+          .map(x => Result(input = input, diagnostic = x))
+      }
+      diagnostics
+        .map { x =>
+          warning_diff.Warning(
+            message = s"[${x.diagnostic.id.fullID}] ${x.diagnostic.message}",
+            position = convertPosition(x.input, x.diagnostic.position)
+          )
+        }
     }
-    val result = diagnostics
-      .map { x =>
-        warning_diff.Warning(
-          message = s"[${x.diagnostic.id.fullID}] ${x.diagnostic.message}",
-          position = convertPosition(x.input, x.diagnostic.position)
-        )
-      }
 
     IO.write(
       new File(new File(in.output), "output.json"),
