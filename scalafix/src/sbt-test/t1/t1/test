@@ -2,8 +2,6 @@
 > scalafixAll
 > warningsAll
 $ exists target/warnings/warnings.json
-$ exec cat target/warnings/warnings.json
-$ exec diff target/warnings/warnings.json tmp/1.json
 $ must-mirror target/warnings/warnings.json tmp/1.json
 $ copy-file target/warnings/warnings.json target/warnings/warnings-previous.json
 

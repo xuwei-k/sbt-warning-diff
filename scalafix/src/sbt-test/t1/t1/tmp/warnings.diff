@@ -8,7 +8,9 @@
 < ${BASE}/a1/src/main/scala/A1.scala
 <   def x3[C]: Int = 3
 < maybe unused type param
-12a4,6
-> ${BASE}/a2/src/test/scala/A2.scala
+14,15c5,6
+<   def hoge = "aaa"
+< hogehoge
+---
 >   def x3: Seq[Int] = Array(3)
 > method copyArrayToImmutableIndexedSeq in class LowPriorityImplicits2 is deprecated (since 2.13.0): implicit conversions from Array to immutable.IndexedSeq are implemented by copying; use `toIndexedSeq` explicitly if you want to copy, or use the more efficient non-copying ArraySeq.unsafeWrapArray
