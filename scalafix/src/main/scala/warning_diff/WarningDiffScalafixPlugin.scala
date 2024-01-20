@@ -19,6 +19,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
   object autoImport {
     val warningsScalafixFiles = taskKey[Seq[File]]("")
+    val warningsScalafixDialect = taskKey[Dialect]("")
     val warningsScalafix = taskKey[Warnings]("")
   }
 
@@ -37,6 +38,30 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
+    ThisBuild / warningsScalafixDialect := {
+      (LocalRootProject / scalaBinaryVersion).value match {
+        case "2.10" =>
+          Dialect.Scala210
+        case "2.11" =>
+          Dialect.Scala211
+        case "2.12" =>
+          if (scalacOptions.value.contains("-Xsource:3")) {
+            Dialect.Scala212Source3
+          } else {
+            Dialect.Scala212
+          }
+        case "2.13" =>
+          if (scalacOptions.value.contains("-Xsource:3")) {
+            Dialect.Scala213Source3
+          } else {
+            Dialect.Scala213
+          }
+        case "3" =>
+          Dialect.Scala3
+        case _ =>
+          Dialect.Scala213Source3
+      }
+    },
     ThisBuild / warningsScalafix := Def.taskDyn {
       val src: Seq[File] = Def.taskDyn {
         val extracted = Project.extract(state.value)
@@ -87,6 +112,8 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
+          val dialect = warningsScalafixDialect.value
+
           IO.withTemporaryDirectory { tmp =>
             scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
               IO.copyFile(f, tmp / "lib" / f.getName)
@@ -100,7 +127,8 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               ),
               sources = src.map(_.getCanonicalPath),
               base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
-              output = tmp.getCanonicalPath
+              output = tmp.getCanonicalPath,
+              dialect = dialect
             )
 
             val buildSbt = Seq[String](

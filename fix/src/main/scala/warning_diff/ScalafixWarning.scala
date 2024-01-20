@@ -5,7 +5,6 @@ import sjsonnew.BasicJsonProtocol._
 import warning_diff.JsonClassOps._
 import java.io.File
 import scala.jdk.CollectionConverters._
-import scalafix.internal.config.ScalaVersion
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
 import com.typesafe.config.ConfigFactory
@@ -17,20 +16,22 @@ object ScalafixWarning {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val jsonString = IO.read(new File("input.json"))
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
-    val input = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
-    val base = new File(input.base)
-    val confRules = ConfigFactory.parseString(input.scalafixConfig).getStringList("rules").asScala.toSet
+    val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
+    val base = new File(in.base)
+    val confRules = ConfigFactory.parseString(in.scalafixConfig).getStringList("rules").asScala.toSet
     val allRules = scalafix.internal.v1.Rules.all()
     val syntactics = allRules.collect { case x: SyntacticRule => x }
     val runRules = syntactics.filter(x => confRules(x.name.value))
-    val sourceFileNames = input.sources
+    val sourceFileNames = in.sources
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
       val src = IO.read(new File(sourceFileName))
       val input = scala.meta.Input.VirtualFile(
         "${BASE}/" + IO.relativize(base, new File(sourceFileName)).getOrElse(sys.error(s"${base} ${sourceFileName}")),
         src
       )
-      val doc = SyntacticDocument.fromInput(input, ScalaVersion.scala3)
+      val parse = implicitly[scala.meta.parsers.Parse[scala.meta.Source]]
+      val tree = parse.apply(input = input, dialect = convertDialect(in.dialect)).get
+      val doc = SyntacticDocument.fromTree(tree)
       val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
       scalafix.internal.patch.PatchInternals
         .syntactic(
@@ -50,7 +51,7 @@ object ScalafixWarning {
       }
 
     IO.write(
-      new File(new File(input.output), "output.json"),
+      new File(new File(in.output), "output.json"),
       result.toJsonString
     )
   }
@@ -70,5 +71,22 @@ object ScalafixWarning {
       endLine = Some(p.endLine),
       endColumn = Some(p.endColumn)
     )
+  }
+
+  private def convertDialect(x: warning_diff.Dialect): scala.meta.Dialect = x match {
+    case Dialect.Scala210 =>
+      scala.meta.dialects.Scala210
+    case Dialect.Scala211 =>
+      scala.meta.dialects.Scala211
+    case Dialect.Scala212 =>
+      scala.meta.dialects.Scala212
+    case Dialect.Scala213 =>
+      scala.meta.dialects.Scala213
+    case Dialect.Scala212Source3 =>
+      scala.meta.dialects.Scala212Source3
+    case Dialect.Scala213Source3 =>
+      scala.meta.dialects.Scala213Source3
+    case Dialect.Scala3 =>
+      scala.meta.dialects.Scala3
   }
 }
