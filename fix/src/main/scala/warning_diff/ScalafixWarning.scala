@@ -8,10 +8,16 @@ import scala.jdk.CollectionConverters._
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
 import com.typesafe.config.ConfigFactory
+import scalafix.lint.RuleDiagnostic
 import sjsonnew.JsonReader
 import scala.meta.inputs.Input
 
 object ScalafixWarning {
+  private case class Result(
+    input: Input.VirtualFile,
+    diagnostic: RuleDiagnostic
+  )
+
   def main(args: Array[String]): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val jsonString = IO.read(new File("input.json"))
@@ -20,7 +26,7 @@ object ScalafixWarning {
     val base = new File(in.base)
     val confRules = ConfigFactory.parseString(in.scalafixConfig).getStringList("rules").asScala.toSet
     val allRules = scalafix.internal.v1.Rules.all()
-    val syntactics = allRules.collect { case x: SyntacticRule => x }
+    val syntactics = allRules.collect { case x: SyntacticRule => x } // only support SyntacticRule
     val runRules = syntactics.filter(x => confRules(x.name.value))
     val sourceFileNames = in.sources
     val diagnostics = sourceFileNames.flatMap { sourceFileName =>
@@ -40,13 +46,13 @@ object ScalafixWarning {
           false
         )
         .diagnostics
-        .map(input -> _)
+        .map(x => Result(input = input, diagnostic = x))
     }
     val result = diagnostics
       .map { x =>
         warning_diff.Warning(
-          message = s"[${x._2.id.fullID}] ${x._2.message}",
-          position = convertPosition(x._1, x._2.position)
+          message = s"[${x.diagnostic.id.fullID}] ${x.diagnostic.message}",
+          position = convertPosition(x.input, x.diagnostic.position)
         )
       }
 
