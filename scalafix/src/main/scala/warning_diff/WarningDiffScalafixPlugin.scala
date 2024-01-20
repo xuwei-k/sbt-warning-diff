@@ -3,6 +3,7 @@ package warning_diff
 import sbt.Keys._
 import sbt._
 import scalafix.sbt.ScalafixPlugin
+import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
 import sjsonnew.JsonReader
 import warning_diff.JsonClassOps._
@@ -58,12 +59,39 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
       }.value
 
       val launcher = sbtLauncher.value
+
+      val scalafixProducts: Seq[File] = Def
+        .taskDyn {
+          val extracted = Project.extract(state.value)
+          val currentBuildUri = extracted.currentRef.build
+          extracted.structure.units
+            .apply(currentBuildUri)
+            .defined
+            .values
+            .filter(
+              _.autoPlugins.contains(WarningDiffScalafixPlugin)
+            )
+            .toList
+            .map { p =>
+              LocalProject(p.id) / ScalafixConfig / products
+            }
+            .join
+        }
+        .value
+        .flatten
+
       if (src.nonEmpty) {
         val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
           "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
           "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
         )
+
+        println("scalafixProducts = " + scalafixProducts)
+
         IO.withTemporaryDirectory { tmp =>
+          scalafixProducts.filter(_.isFile).foreach { f =>
+            IO.copyFile(f, tmp / "lib_managed" / f.getName)
+          }
           val input = FixInput(
             scalafixConfig = IO.read(
               _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value

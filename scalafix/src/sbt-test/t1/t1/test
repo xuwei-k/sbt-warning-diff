@@ -1,3 +1,5 @@
+> myScalafix/compile
+> scalafixAll
 > warningsAll
 $ exists target/warnings/warnings.json
 $ must-mirror target/warnings/warnings.json tmp/1.json
