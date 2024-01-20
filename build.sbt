@@ -131,3 +131,12 @@ val fix = project
   .dependsOn(LocalProject("core2_13"))
 
 publish / skip := true
+
+inThisBuild(
+  List(
+    semanticdbEnabled := true,
+    scalafixOnCompile := {
+      sys.env.isDefinedAt("GITHUB_ACTION") == false
+    }
+  )
+)

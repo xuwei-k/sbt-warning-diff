@@ -7,8 +7,8 @@ import sbt.plugins.JvmPlugin
 import sjsonnew.BasicJsonProtocol._
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
+import warning_diff.JsonClassOps._
 import xsbti.Severity
-import JsonClassOps._
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
