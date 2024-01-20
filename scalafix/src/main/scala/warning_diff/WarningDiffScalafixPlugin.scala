@@ -37,7 +37,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
-    ThisBuild / warningsScalafix := {
+    ThisBuild / warningsScalafix := Def.taskDyn {
       val src: Seq[File] = Def.taskDyn {
         val extracted = Project.extract(state.value)
         val currentBuildUri = extracted.currentRef.build
@@ -58,79 +58,81 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
           .map(_.flatten)
       }.value
 
-      val launcher = sbtLauncher.value
-
-      val scalafixProducts: Seq[File] = Def
-        .taskDyn {
-          val extracted = Project.extract(state.value)
-          val currentBuildUri = extracted.currentRef.build
-          extracted.structure.units
-            .apply(currentBuildUri)
-            .defined
-            .values
-            .filter(
-              _.autoPlugins.contains(WarningDiffScalafixPlugin)
-            )
-            .toList
-            .map { p =>
-              LocalProject(p.id) / ScalafixConfig / products
-            }
-            .join
-        }
-        .value
-        .flatten
-
       if (src.nonEmpty) {
-        val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
-          "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
-          "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
-        )
+        Def.task {
+          val launcher = sbtLauncher.value
 
-        IO.withTemporaryDirectory { tmp =>
-          scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
-            IO.copyFile(f, tmp / "lib" / f.getName)
-          }
-          val input = FixInput(
-            scalafixConfig = IO.read(
-              _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
-                .getOrElse(
-                  file(".scalafix.conf")
+          val scalafixProducts: Seq[File] = Def
+            .taskDyn {
+              val extracted = Project.extract(state.value)
+              val currentBuildUri = extracted.currentRef.build
+              extracted.structure.units
+                .apply(currentBuildUri)
+                .defined
+                .values
+                .filter(
+                  _.autoPlugins.contains(WarningDiffScalafixPlugin)
                 )
-            ),
-            sources = src.map(_.getCanonicalPath),
-            base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
-            output = tmp.getCanonicalPath
+                .toList
+                .map { p =>
+                  LocalProject(p.id) / ScalafixConfig / products
+                }
+                .join
+            }
+            .value
+            .flatten
+
+          val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
+            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
+            "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
-          val buildSbt = Seq[String](
-            """scalaVersion := "2.13.12" """,
-            deps
-              .map(moduleIdToString)
-              .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
-          ).mkString("\n\n")
-
-          IO.write(tmp / "build.sbt", buildSbt)
-          IO.write(tmp / "input.json", input.toJsonString)
-          val exitCode = Fork.java.apply(
-            ForkOptions().withWorkingDirectory(tmp),
-            Seq(
-              "-jar",
-              launcher.getCanonicalPath,
-              "runMain warning_diff.ScalafixWarning"
+          IO.withTemporaryDirectory { tmp =>
+            scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
+              IO.copyFile(f, tmp / "lib" / f.getName)
+            }
+            val input = FixInput(
+              scalafixConfig = IO.read(
+                _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixConfig.value
+                  .getOrElse(
+                    file(".scalafix.conf")
+                  )
+              ),
+              sources = src.map(_.getCanonicalPath),
+              base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
+              output = tmp.getCanonicalPath
             )
-          )
-          assert(exitCode == 0, s"exit code = $exitCode")
-          val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-          val json = {
-            val output = IO.read(tmp / "output.json")
-            sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+
+            val buildSbt = Seq[String](
+              """scalaVersion := "2.13.12" """,
+              deps
+                .map(moduleIdToString)
+                .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
+            ).mkString("\n\n")
+
+            IO.write(tmp / "build.sbt", buildSbt)
+            IO.write(tmp / "input.json", input.toJsonString)
+            val exitCode = Fork.java.apply(
+              ForkOptions().withWorkingDirectory(tmp),
+              Seq(
+                "-jar",
+                launcher.getCanonicalPath,
+                "runMain warning_diff.ScalafixWarning"
+              )
+            )
+            assert(exitCode == 0, s"exit code = $exitCode")
+            val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
+            val json = {
+              val output = IO.read(tmp / "output.json")
+              sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
+            }
+            implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
           }
-          implicitly[JsonReader[Warnings]].read(Some(json), unbuilder)
         }
       } else {
-        Nil
+        Def.task(Seq.empty[Warning])
       }
-    },
+    }.value,
     WarningDiffPlugin.warningConfigs.flatMap { x =>
       Def.settings(
         (x / warningsScalafixFiles) := {
