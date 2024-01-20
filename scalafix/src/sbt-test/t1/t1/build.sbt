@@ -1,9 +1,22 @@
-val commonSettings = Def.settings(
-  scalaVersion := "2.13.12",
+def Scala212 = "2.12.18"
+def Scala213 = "2.13.12"
+def Scala3 = "3.3.1"
+
+val baseSettings = Def.settings(
   scalacOptions += "-deprecation"
 )
 
-val a1 = project.settings(commonSettings)
+val commonSettings = Def.settings(
+  baseSettings,
+  scalaVersion := Scala213,
+)
+
+val a1 = projectMatrix
+  .settings(baseSettings)
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala3)
+  )
 
 val a2 = project.settings(commonSettings)
 
@@ -39,4 +52,4 @@ val myScalafix = project
 commonSettings
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.3.4"
-ThisBuild / scalafixScalaBinaryVersion := scalaBinaryVersion.value
+ThisBuild / scalafixScalaBinaryVersion := (myScalafix / scalaBinaryVersion).value

@@ -5,7 +5,7 @@ $ exists target/warnings/warnings.json
 $ must-mirror target/warnings/warnings.json tmp/1.json
 $ copy-file target/warnings/warnings.json target/warnings/warnings-previous.json
 
-> all a1/clean a2/clean
+> all a12_12/clean a13/clean a2/clean
 > warningsDiff
 $ exists target/warnings/warnings.diff
 $ touch empty
