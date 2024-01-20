@@ -1,7 +1,7 @@
 package warning_diff
 
-import sbt._
 import sbt.Keys._
+import sbt._
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
 import sjsonnew.BasicJsonProtocol._

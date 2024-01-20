@@ -88,3 +88,12 @@ releaseProcess := Seq[ReleaseStep](
 )
 
 publishTo := sonatypePublishToBundle.value
+
+inThisBuild(
+  List(
+    semanticdbEnabled := true,
+    scalafixOnCompile := {
+      sys.env.isDefinedAt("GITHUB_ACTION") == false
+    }
+  )
+)
