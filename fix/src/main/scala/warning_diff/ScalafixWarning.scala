@@ -19,6 +19,16 @@ object ScalafixWarning {
   )
 
   def main(args: Array[String]): Unit = {
+    try {
+      run()
+    } catch {
+      case e: LinkageError =>
+        // https://github.com/sbt/sbt/issues/7408
+        throw new RuntimeException(e)
+    }
+  }
+
+  private def run(): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(new File("input.json")).get
     val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
