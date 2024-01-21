@@ -120,10 +120,11 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
               IO.copyFile(f, tmp / "lib" / f.getName)
             }
+            val outputJson = tmp / "output.json"
             val input = FixInput(
               projects = values,
               base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
-              output = tmp.getCanonicalPath
+              output = outputJson.getCanonicalPath
             )
 
             val buildSbt = Seq[String](
@@ -145,10 +146,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             )
             assert(exitCode == 0, s"exit code = $exitCode")
             val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-            val json = {
-              val output = IO.read(tmp / "output.json")
-              sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(output)
-            }
+            val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(outputJson).get
             implicitly[JsonReader[Seq[FixOutput]]].read(Some(json), unbuilder)
           }
         }

@@ -8,7 +8,7 @@ val baseSettings = Def.settings(
 
 val commonSettings = Def.settings(
   baseSettings,
-  scalaVersion := Scala213,
+  scalaVersion := Scala213
 )
 
 val a1 = projectMatrix

@@ -80,7 +80,7 @@ object ScalafixWarning {
     }
 
     IO.write(
-      new File(new File(in.output), "output.json"),
+      new File(in.output),
       result.toJsonString
     )
   }
