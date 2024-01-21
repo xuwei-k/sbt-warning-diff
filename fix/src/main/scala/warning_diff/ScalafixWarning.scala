@@ -20,8 +20,7 @@ object ScalafixWarning {
 
   def main(args: Array[String]): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
-    val jsonString = IO.read(new File("input.json"))
-    val json = sjsonnew.support.scalajson.unsafe.Parser.parseUnsafe(jsonString)
+    val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(new File("input.json")).get
     val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val base = new File(in.base)
     val result = in.projects.map { proj =>
