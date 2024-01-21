@@ -130,9 +130,9 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
 
             val scalaV = (ThisBuild / scalafixScalaBinaryVersion).value match {
               case "2.12" =>
-                _root_.scalafix.sbt.BuildInfo.scala212
+                "2.12.18"
               case _ =>
-                _root_.scalafix.sbt.BuildInfo.scala213
+                "2.13.12"
             }
 
             val buildSbt = Seq[String](
