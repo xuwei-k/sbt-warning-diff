@@ -37,7 +37,6 @@ object ScalafixWarning {
                 )
                 .withScalacOptions(proj.scalacOptions.toList)
                 .withScalaVersion(proj.scalaVersion)
-                // TODO add scalaVersion and scalacOptions ?
             ).get
         }
         .collect {

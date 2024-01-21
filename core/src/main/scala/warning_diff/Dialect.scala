@@ -16,7 +16,7 @@ object Dialect {
   case object Scala213Source3 extends Dialect("Scala213Source3")
   case object Scala3 extends Dialect("Scala3")
 
-  val all: Seq[Dialect] = Seq(
+  private[this] val all: Seq[Dialect] = Seq(
     Scala210,
     Scala211,
     Scala212,
@@ -26,7 +26,7 @@ object Dialect {
     Scala3
   )
 
-  val map: Map[String, Dialect] = all.map(a => a.value -> a).toMap
+  private[this] val map: Map[String, Dialect] = all.map(a => a.value -> a).toMap
 
   implicit val instance: JsonFormat[Dialect] =
     new JsonFormat[Dialect] {
