@@ -1,15 +1,15 @@
 package warning_diff
 
 import java.io.File
-import sbt.Keys._
-import sbt._
+import sbt.Keys.*
+import sbt.*
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
-import sjsonnew.BasicJsonProtocol._
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonReader
-import warning_diff.JsonClassOps._
-import warning_diff.WarningDiffPlugin.autoImport._
+import warning_diff.JsonClassOps.*
+import warning_diff.WarningDiffPlugin.autoImport.*
 
 object WarningDiffScalafixPlugin extends AutoPlugin {
   override def requires: Plugins = WarningDiffPlugin && ScalafixPlugin
@@ -21,7 +21,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     val warningsScalafix = taskKey[Seq[FixOutput]]("")
   }
 
-  import autoImport._
+  import autoImport.*
 
   private def moduleIdToString(m: ModuleID): String = {
     def q(s: String): String = "\"" + s + "\""

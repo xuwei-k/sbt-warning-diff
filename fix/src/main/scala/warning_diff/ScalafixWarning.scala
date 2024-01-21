@@ -3,14 +3,14 @@ package warning_diff
 import com.typesafe.config.ConfigFactory
 import java.io.File
 import sbt.io.IO
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.meta.inputs.Input
 import scalafix.lint.RuleDiagnostic
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
-import sjsonnew.BasicJsonProtocol._
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonReader
-import warning_diff.JsonClassOps._
+import warning_diff.JsonClassOps.*
 
 object ScalafixWarning {
   private case class Result(

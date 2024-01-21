@@ -1,13 +1,13 @@
 package warning_diff
 
-import sbt.Keys._
-import sbt._
+import sbt.Keys.*
+import sbt.*
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
-import sjsonnew.BasicJsonProtocol._
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
-import warning_diff.JsonClassOps._
+import warning_diff.JsonClassOps.*
 import xsbti.Severity
 
 object WarningDiffPlugin extends AutoPlugin {
@@ -21,7 +21,7 @@ object WarningDiffPlugin extends AutoPlugin {
     val warningsPrevious = taskKey[Option[Warnings]]("")
   }
 
-  import autoImport._
+  import autoImport.*
 
   type WarningDiff = List[String]
   type Warnings = Seq[Warning]

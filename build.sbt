@@ -1,4 +1,4 @@
-import ReleaseTransformations._
+import ReleaseTransformations.*
 
 def Scala212 = "2.12.18"
 def Scala213 = "2.13.12"
@@ -39,6 +39,7 @@ val commonSettings = Def.settings(
     <tag>{tagOrHash.value}</tag>
   </scm>,
   scalacOptions ++= Seq(
+    "-Xsource:3",
     "-deprecation",
     "-unchecked",
     "-Xlint",
@@ -65,11 +66,10 @@ val commonSettings = Def.settings(
 
 val pluginSettings = Def.settings(
   commonSettings,
-  Compile / scalacOptions -= "-Xsource:3",
   scriptedBufferLog := false,
   scriptedLaunchOpts ++= {
     val javaVmArgs = {
-      import scala.collection.JavaConverters._
+      import scala.collection.JavaConverters.*
       java.lang.management.ManagementFactory.getRuntimeMXBean.getInputArguments.asScala.toList
     }
     javaVmArgs.filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dsbt.log.noformat").exists(a.startsWith))

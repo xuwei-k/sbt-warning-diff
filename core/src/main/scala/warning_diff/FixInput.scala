@@ -1,6 +1,6 @@
 package warning_diff
 
-import sjsonnew.BasicJsonProtocol._
+import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import warning_diff.FixInput.SubProject
 

@@ -13,5 +13,3 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-language:higherKinds"
 )
-
-Compile / scalacOptions -= "-Xsource:3"
