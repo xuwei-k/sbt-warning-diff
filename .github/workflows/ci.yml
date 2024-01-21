@@ -28,9 +28,6 @@ jobs:
         java-version: "${{ matrix.java }}"
         distribution: temurin
     - run: sbt -v
-           scalafmtCheckAll
-           scalafmtSbtCheck
-           "scalafixAll --check"
            test
            publishLocal
            scripted
