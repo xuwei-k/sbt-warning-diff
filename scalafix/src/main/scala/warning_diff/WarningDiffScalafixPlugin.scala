@@ -6,6 +6,7 @@ import sbt.*
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
+import scalafix.sbt.ScalafixPlugin.autoImport.scalafixScalaBinaryVersion
 import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonReader
 import warning_diff.JsonClassOps.*
@@ -127,8 +128,15 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               output = outputJson.getCanonicalPath
             )
 
+            val scalaV = (ThisBuild / scalafixScalaBinaryVersion).value match {
+              case "2.12" =>
+                _root_.scalafix.sbt.BuildInfo.scala212
+              case _ =>
+                _root_.scalafix.sbt.BuildInfo.scala213
+            }
+
             val buildSbt = Seq[String](
-              """scalaVersion := "2.13.12" """,
+              s"""scalaVersion := "${scalaV}" """,
               deps
                 .map(moduleIdToString)
                 .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")

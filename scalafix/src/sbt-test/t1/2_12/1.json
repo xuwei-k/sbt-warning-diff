@@ -1,0 +1,23 @@
+[{
+  "message": "[FindHoge] aaa",
+  "position": {
+    "line": 1,
+    "lineContent": "  def hoge: String",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startLine": 1,
+    "startColumn": 6,
+    "endLine": 1,
+    "endColumn": 10
+  }
+}, {
+  "message": "[UnusedTypeParams] maybe unused type param",
+  "position": {
+    "line": 3,
+    "lineContent": "  def bbb[C]: Int = 3",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startLine": 3,
+    "startColumn": 10,
+    "endLine": 3,
+    "endColumn": 11
+  }
+}]

@@ -119,16 +119,19 @@ val scalafixPlugin = project
   )
   .dependsOn(plugin)
 
-val fix = project
+val fix = projectMatrix
   .in(file("fix"))
   .settings(
     commonSettings,
-    scalaVersion := Scala213,
     name := "warning-diff-scalafix",
     libraryDependencies += "org.scala-sbt" %% "io" % "1.9.8",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.11.1"
   )
-  .dependsOn(LocalProject("core2_13"))
+  .dependsOn(core)
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala213)
+  )
 
 commonSettings
 publish / skip := true
