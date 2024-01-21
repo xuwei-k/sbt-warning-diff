@@ -93,12 +93,12 @@
 }, {
   "message": "[FindHoge] hogehoge",
   "position": {
-    "line": 9,
+    "line": 5,
     "lineContent": "  def hoge = \"aaa\"",
     "sourcePath": "${BASE}/a2/src/test/scala/A2.scala",
-    "startLine": 9,
+    "startLine": 5,
     "startColumn": 6,
-    "endLine": 9,
+    "endLine": 5,
     "endColumn": 10
   }
 }]

@@ -3,9 +3,5 @@ class A2 {
 }
 
 object A2 {
-  implicit class Foo(val x: Int) {
-    def bar: Int = x + 2
-  }
-
   def hoge = "aaa"
 }
