@@ -138,7 +138,7 @@ object WarningDiffPlugin extends AutoPlugin {
       (LocalRootProject / warningsCurrentFile).?.value match {
         case Some(f) =>
           streams.value.log.info(s"write to ${f}")
-          IO.write(f, result.toJsonString + "\n")
+          IO.write(f, result.toJsonString)
         case None =>
           streams.value.log.warn(s"${warningsDiffFile.key.label} undefined")
       }
