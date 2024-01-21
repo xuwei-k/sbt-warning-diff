@@ -20,6 +20,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
   object autoImport {
     val warningsScalafixConfig = taskKey[FixInput.SubProject]("")
     val warningsScalafix = taskKey[Seq[FixOutput]]("")
+    val warningsScalafixScalaVersion = settingKey[String]("")
   }
 
   import autoImport.*
@@ -90,6 +91,14 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
         )
       }
     },
+    ThisBuild / warningsScalafixScalaVersion := {
+      (ThisBuild / scalafixScalaBinaryVersion).value match {
+        case "2.12" =>
+          _root_.scalafix.sbt.BuildInfo.scala212
+        case _ =>
+          _root_.scalafix.sbt.BuildInfo.scala213
+      }
+    },
     ThisBuild / warningsScalafix := Def.taskDyn {
       val values: Seq[FixInput.SubProject] = Def.taskDyn {
         subProjects.value.flatMap { p =>
@@ -128,12 +137,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               output = outputJson.getCanonicalPath
             )
 
-            val scalaV = (ThisBuild / scalafixScalaBinaryVersion).value match {
-              case "2.12" =>
-                _root_.scalafix.sbt.BuildInfo.scala212
-              case _ =>
-                _root_.scalafix.sbt.BuildInfo.scala213
-            }
+            val scalaV = (ThisBuild / warningsScalafixScalaVersion).value
 
             val buildSbt = Seq[String](
               s"""scalaVersion := "${scalaV}" """,
