@@ -8,8 +8,16 @@ show added/removed warnings in CI
 
 ### plugins.sbt
 
+scala compiler warnings only
+
 ```scala
 addSbtPlugin("com.github.xuwei-k" % "sbt-warning-diff" % "version")
+```
+
+scala compiler warnings and scalafix warnings
+
+```scala
+addSbtPlugin("com.github.xuwei-k" % "warning-diff-scalafix-plugin" % "version")
 ```
 
 ### GitHub Actions example
