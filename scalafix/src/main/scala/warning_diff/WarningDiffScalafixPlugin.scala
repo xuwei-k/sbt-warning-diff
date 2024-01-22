@@ -126,6 +126,8 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
+          val forkOps = (warningsScalafix / forkOptions).value
+
           IO.withTemporaryDirectory { tmp =>
             scalafixProducts.withFilter(_.isFile).withFilter(_.getName.endsWith(".jar")).foreach { f =>
               IO.copyFile(f, tmp / "lib" / f.getName)
@@ -149,7 +151,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             IO.write(tmp / "build.sbt", buildSbt)
             IO.write(tmp / "input.json", input.toJsonString)
             val exitCode = Fork.java.apply(
-              ForkOptions().withWorkingDirectory(tmp),
+              forkOps.withWorkingDirectory(tmp),
               Seq(
                 "-jar",
                 launcher.getCanonicalPath,
