@@ -13,8 +13,11 @@ import scalafix.v1.SyntacticRule
 class FindHoge(myConfig: String) extends SyntacticRule("FindHoge") {
   def this() = this("default value")
 
-  override def withConfiguration(config: Configuration): Configured[Rule] =
+  override def withConfiguration(config: Configuration): Configured[Rule] = {
+    assert(config.scalacOptions == List("-deprecation"), config.scalacOptions)
+    assert(config.scalaVersion.nonEmpty)
     config.conf.get[String]("FindHoge").map(x => new FindHoge(x))
+  }
 
   override def fix(implicit doc: SyntacticDocument): Patch = {
     assert(myConfig == "aaaaa", myConfig)
