@@ -1,6 +1,7 @@
 package warning_diff
 
 import sbt.*
+import sbt.internal.util.complete.DefaultParsers
 import scalafix.interfaces.ScalafixArguments
 import scalafix.interfaces.ScalafixDiagnostic
 import scalafix.internal.sbt.Arg
@@ -13,11 +14,12 @@ object ScalafixResultPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   object autoImport {
-    val scalafixResult = taskKey[List[ScalafixDiagnostic]]("")
+    val scalafixResult = inputKey[List[ScalafixDiagnostic]]("")
+    val scalafixAllResult = inputKey[List[ScalafixDiagnostic]]("")
   }
 
   private[this] val scalafixBuffer =
-    settingKey[scala.collection.mutable.Buffer[ScalafixDiagnostic]]("")
+    settingKey[scala.collection.mutable.Buffer[ScalafixDiagnostic]]("").withRank(KeyRanks.Invisible)
 
   private[this] val bufferLock = new Object
 
@@ -44,20 +46,36 @@ object ScalafixResultPlugin extends AutoPlugin {
     constructor.newInstance(a1, a2)
   }
 
-  override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
-    scalafixBuffer := scala.collection.mutable.Buffer.empty,
-    scalafixResult := Def.taskDyn {
+  private[this] def createTaskDef(
+    x: InputKey[List[ScalafixDiagnostic]],
+    y: InputKey[Unit]
+  ): Def.Setting[?] = {
+    x := Def.inputTaskDyn {
       bufferLock.synchronized {
         scalafixBuffer.value.clear()
       }
-      _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixAll
-        .toTask("")
+      y.toTask(DefaultParsers.any.*.string.parsed)
         .map { _ =>
           bufferLock.synchronized {
-            scalafixBuffer.value.toList
+            val buf = scalafixBuffer.value
+            val result = buf.toList
+            buf.clear()
+            result
           }
         }
-    }.value,
+    }.evaluated
+  }
+
+  override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
+    scalafixBuffer := scala.collection.mutable.Buffer.empty,
+    createTaskDef(
+      scalafixResult,
+      _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafix
+    ),
+    createTaskDef(
+      scalafixAllResult,
+      _root_.scalafix.sbt.ScalafixPlugin.autoImport.scalafixAll
+    ),
     scalafixInterfaceProvider := { () =>
       val old = scalafixInterfaceProvider.value.apply()
       modifyScalafixInterface(
