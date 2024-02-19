@@ -21,15 +21,16 @@ class FindHoge(myConfig: String) extends SyntacticRule("FindHoge") {
 
   override def fix(implicit doc: SyntacticDocument): Patch = {
     assert(myConfig == "aaaaa", myConfig)
-    doc.tree.collect { case t @ Term.Name("hoge") =>
-      Patch.lint(
-        Diagnostic(
-          id = "",
-          message = "hogehoge",
-          position = t.pos,
-          severity = LintSeverity.Warning
+    doc.tree.collect {
+      case t @ Term.Name("hoge") =>
+        Patch.lint(
+          Diagnostic(
+            id = "",
+            message = "hogehoge",
+            position = t.pos,
+            severity = LintSeverity.Warning
+          )
         )
-      )
     }.asPatch
   }
 }
