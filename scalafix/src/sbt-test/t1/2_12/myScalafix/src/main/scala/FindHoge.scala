@@ -13,15 +13,16 @@ import scalafix.v1.SyntacticRule
 class FindHoge extends SyntacticRule("FindHoge") {
 
   override def fix(implicit doc: SyntacticDocument): Patch = {
-    doc.tree.collect { case t @ Term.Name("hoge") =>
-      Patch.lint(
-        Diagnostic(
-          id = "",
-          message = "aaa",
-          position = t.pos,
-          severity = LintSeverity.Warning
+    doc.tree.collect {
+      case t @ Term.Name("hoge") =>
+        Patch.lint(
+          Diagnostic(
+            id = "",
+            message = "aaa",
+            position = t.pos,
+            severity = LintSeverity.Warning
+          )
         )
-      )
     }.asPatch
   }
 }
