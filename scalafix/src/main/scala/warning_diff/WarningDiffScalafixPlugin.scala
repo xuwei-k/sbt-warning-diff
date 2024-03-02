@@ -1,8 +1,8 @@
 package warning_diff
 
 import java.io.File
-import sbt.Keys.*
 import sbt.*
+import sbt.Keys.*
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
