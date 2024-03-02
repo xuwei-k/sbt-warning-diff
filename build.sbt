@@ -125,7 +125,7 @@ val fix = projectMatrix
     commonSettings,
     name := "warning-diff-scalafix",
     libraryDependencies += "org.scala-sbt" %% "io" % "1.9.9",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.11.1"
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.12.0"
   )
   .dependsOn(core)
   .defaultAxes(VirtualAxis.jvm)
