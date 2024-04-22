@@ -114,7 +114,11 @@ val scalafixPlugin = project
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
-    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.12.0"),
+    // don't use sbt-scalafix 0.12.0 https://github.com/scalacenter/scalafix/issues/1965
+    addSbtPlugin(
+      "ch.epfl.scala" % "sbt-scalafix" % "0.11.1" exclude ("ch.epfl.scala", "scalafix-interfaces") // scala-steward:off
+    ),
+    libraryDependencies += "ch.epfl.scala" % "scalafix-interfaces" % "0.12.0",
     name := "warning-diff-scalafix-plugin"
   )
   .dependsOn(plugin)
