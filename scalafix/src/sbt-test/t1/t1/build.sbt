@@ -20,11 +20,15 @@ val a1 = projectMatrix
 
 val a2 = project.settings(commonSettings)
 
-val myScalafix = project
+val myScalafix = projectMatrix
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala213)
+  )
   .in(file("myScalafix"))
   .disablePlugins(ScalafixPlugin)
   .settings(
-    commonSettings,
+    baseSettings,
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     Compile / resourceGenerators += Def.task {
       val rules = (Compile / compile).value
@@ -52,4 +56,3 @@ val myScalafix = project
 commonSettings
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.4.0"
-ThisBuild / scalafixScalaBinaryVersion := (myScalafix / scalaBinaryVersion).value

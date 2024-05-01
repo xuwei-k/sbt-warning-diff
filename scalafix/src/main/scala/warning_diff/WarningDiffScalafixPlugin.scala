@@ -6,7 +6,6 @@ import sbt.Keys.*
 import scalafix.sbt.ScalafixPlugin
 import scalafix.sbt.ScalafixPlugin.autoImport.ScalafixConfig
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixDependencies
-import scalafix.sbt.ScalafixPlugin.autoImport.scalafixScalaBinaryVersion
 import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonReader
 import warning_diff.JsonClassOps.*
@@ -92,7 +91,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
       }
     },
     ThisBuild / warningsScalafixScalaVersion := {
-      (ThisBuild / scalafixScalaBinaryVersion).value match {
+      (ThisBuild / scalaBinaryVersion).value match {
         case "2.12" =>
           _root_.scalafix.sbt.BuildInfo.scala212
         case _ =>
@@ -108,15 +107,23 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
         }.join
       }.value
 
+      val scalaV = (ThisBuild / warningsScalafixScalaVersion).value
+      val s = state.value
+
       if (values.exists(_.sources.nonEmpty)) {
         Def.task {
           val launcher = sbtLauncher.value
 
           val scalafixProducts: Seq[File] = Def
             .taskDyn {
-              subProjects.value.map { p =>
-                LocalProject(p.id) / ScalafixConfig / products
-              }.join
+              subProjects.value
+                .withFilter(p =>
+                  s.getSetting(LocalProject(p.id) / scalaBinaryVersion) == Some(
+                    sbt.librarymanagement.CrossVersion.binaryScalaVersion(scalaV)
+                  )
+                )
+                .map(p => LocalProject(p.id) / ScalafixConfig / products)
+                .join
             }
             .value
             .flatten
@@ -138,8 +145,6 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               base = (LocalRootProject / baseDirectory).value.getCanonicalPath,
               output = outputJson.getCanonicalPath
             )
-
-            val scalaV = (ThisBuild / warningsScalafixScalaVersion).value
 
             val buildSbt = Seq[String](
               s"""scalaVersion := "${scalaV}" """,

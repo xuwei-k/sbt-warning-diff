@@ -13,10 +13,20 @@ object MyScalafix extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] = Def.settings(
     ScalafixConfig / products += {
-      (LocalProject("myScalafix") / Compile / packageBin).value
+      scalaBinaryVersion.value match {
+        case "2.12" =>
+          (LocalProject("myScalafix2_12") / Compile / packageBin).value
+        case _ =>
+          (LocalProject("myScalafix2_13") / Compile / packageBin).value
+      }
     },
     ScalafixConfig / products ++= {
-      (LocalProject("myScalafix") / Compile / externalDependencyClasspath).value.map(_.data)
+      scalaBinaryVersion.value match {
+        case "2.12" =>
+          (LocalProject("myScalafix2_12") / Compile / externalDependencyClasspath).value.map(_.data)
+        case _ =>
+          (LocalProject("myScalafix2_13") / Compile / externalDependencyClasspath).value.map(_.data)
+      }
     }
   )
 }

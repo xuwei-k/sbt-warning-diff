@@ -1,4 +1,5 @@
-> myScalafix/compile
+> myScalafix2_12/compile
+> myScalafix2_13/compile
 > scalafixAll
 > warningsAll
 $ exists target/warnings/warnings.json
