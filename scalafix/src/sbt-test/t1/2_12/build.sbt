@@ -37,4 +37,3 @@ val myScalafix = project
 baseSettings
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.4.0"
-ThisBuild / scalafixScalaBinaryVersion := "2.12"
