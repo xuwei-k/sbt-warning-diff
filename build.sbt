@@ -124,7 +124,7 @@ val fix = projectMatrix
   .settings(
     commonSettings,
     name := "warning-diff-scalafix",
-    libraryDependencies += "org.scala-sbt" %% "io" % "1.9.9",
+    libraryDependencies += "org.scala-sbt" %% "io" % "1.10.0",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.12.1"
   )
   .dependsOn(core)
