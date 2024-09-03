@@ -1,9 +1,15 @@
 package warning_diff.rdf
 
+import sjsonnew.BasicJsonProtocol.*
+import sjsonnew.JsonFormat
+import warning_diff.JsonClassOps.*
+
 case class DiagnosticResult(
   diagnostics: Seq[Diagnostic],
   source: Option[Source]
-)
+) {
+  override def toString = this.toJsonString
+}
 
 object DiagnosticResult {
   def fromWarnings(values: Seq[warning_diff.Warning]): DiagnosticResult =
@@ -12,19 +18,43 @@ object DiagnosticResult {
         Diagnostic(
           message = w.message,
           location = Location(
-            path = w.position.sourcePath.getOrElse(""),
+            path = {
+              val prefix = "${BASE}/"
+              w.position.sourcePath match {
+                case Some(value) =>
+                  if (value.startsWith(prefix)) {
+                    value.drop(prefix.length)
+                  } else {
+                    value
+                  }
+                case None =>
+                  ""
+              }
+            },
             range = Range(
-              line = w.position.line,
-              column = w.position.startColumn
+              start = Position(
+                line = w.position.startLine,
+                column = w.position.startColumn
+              ),
+              end = Position(
+                line = w.position.endLine,
+                column = w.position.endColumn
+              )
             )
           ),
-          severity = Some(Severity.Warning)
+          severity = Some("WARNING")
         )
       },
       source = Some(
         Source(
-          name = "Scala"
+          name = "scala"
         )
       )
+    )
+
+  implicit val instance: JsonFormat[DiagnosticResult] =
+    caseClass2(apply, unapply)(
+      "diagnostics",
+      "source"
     )
 }

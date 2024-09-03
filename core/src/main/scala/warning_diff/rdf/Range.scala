@@ -2,16 +2,19 @@ package warning_diff.rdf
 
 import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
+import warning_diff.JsonClassOps.*
 
 case class Range(
-  line: Option[Int],
-  column: Option[Int]
-)
+  start: Position,
+  end: Position
+) {
+  override def toString = this.toJsonString
+}
 
 object Range {
   implicit val instance: JsonFormat[Range] =
     caseClass2(apply, unapply)(
-      "line",
-      "column"
+      "start",
+      "end"
     )
 }
