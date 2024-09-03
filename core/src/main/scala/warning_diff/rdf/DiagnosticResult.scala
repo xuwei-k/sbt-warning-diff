@@ -33,11 +33,11 @@ object DiagnosticResult {
             },
             range = Range(
               start = Position(
-                line = w.position.startLine,
+                line = w.position.startLine.orElse(w.position.line),
                 column = w.position.startColumn
               ),
               end = Position(
-                line = w.position.endLine,
+                line = w.position.endLine.orElse(w.position.line),
                 column = w.position.endColumn
               )
             )

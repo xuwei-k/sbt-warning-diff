@@ -21,7 +21,9 @@ object WarningDiffPlugin extends AutoPlugin {
     val warningsPrevious = taskKey[Option[Warnings]]("")
 
     val warningsReviewdogDiagnosticFormatFile = taskKey[File]("")
-    val warningsReviewdogDiagnosticFormat = taskKey[warning_diff.rdf.DiagnosticResult]("")
+    val warningsReviewdogDiagnosticFormat = taskKey[warning_diff.rdf.DiagnosticResult](
+      "https://github.com/reviewdog/reviewdog/tree/a9298ff2720c4b0/proto/rdf"
+    )
   }
 
   import autoImport.*
