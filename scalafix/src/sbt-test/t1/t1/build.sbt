@@ -55,4 +55,4 @@ val myScalafix = projectMatrix
 
 commonSettings
 
-ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.4.0"
+ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.4.5"
