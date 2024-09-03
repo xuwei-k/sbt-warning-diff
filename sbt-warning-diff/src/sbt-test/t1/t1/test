@@ -14,3 +14,6 @@ $ copy-file tmp/A2.scala a2/src/test/scala/A2.scala
 > warningsAll
 > warningsDiff
 $ must-mirror target/warnings/warnings.diff tmp/warnings.diff
+
+> warningsReviewdogDiagnosticFormat
+$ must-mirror target/warnings/reviewdoc.json tmp/reviewdoc.json
