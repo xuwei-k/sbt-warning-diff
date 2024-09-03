@@ -1,0 +1,36 @@
+{
+  "diagnostics": [{
+    "message": "method mapValues in trait MapOps is deprecated (since 2.13.0): Use .view.mapValues(f). A future version will include a strict version of this method (for now, .view.mapValues(f).toMap).",
+    "location": {
+      "path": "a2/src/test/scala/A2.scala",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 35
+        },
+        "end": {
+          "line": 2,
+          "column": 46
+        }
+      }
+    },
+    "severity": "WARNING"
+  }, {
+    "message": "method copyArrayToImmutableIndexedSeq in class LowPriorityImplicits2 is deprecated (since 2.13.0): implicit conversions from Array to immutable.IndexedSeq are implemented by copying; use `toIndexedSeq` explicitly if you want to copy, or use the more efficient non-copying ArraySeq.unsafeWrapArray",
+    "location": {
+      "path": "a2/src/test/scala/A2.scala",
+      "range": {
+        "start": {
+          "line": 4
+        },
+        "end": {
+          "line": 4
+        }
+      }
+    },
+    "severity": "WARNING"
+  }],
+  "source": {
+    "name": "scala"
+  }
+}

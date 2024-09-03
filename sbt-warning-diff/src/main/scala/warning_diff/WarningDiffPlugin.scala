@@ -19,6 +19,11 @@ object WarningDiffPlugin extends AutoPlugin {
     val warningsDiff = taskKey[WarningDiff]("")
     val warningsAll = taskKey[Warnings]("")
     val warningsPrevious = taskKey[Option[Warnings]]("")
+
+    val warningsReviewdogDiagnosticFormatFile = taskKey[File]("")
+    val warningsReviewdogDiagnosticFormat = taskKey[warning_diff.rdf.DiagnosticResult](
+      "https://github.com/reviewdog/reviewdog/tree/a9298ff2720c4b0/proto/rdf"
+    )
   }
 
   import autoImport.*
@@ -61,6 +66,18 @@ object WarningDiffPlugin extends AutoPlugin {
     },
     LocalRootProject / warningsPreviousFile := {
       (LocalRootProject / target).value / dir / "warnings-previous.json"
+    },
+    LocalRootProject / warningsReviewdogDiagnosticFormatFile := {
+      (LocalRootProject / target).value / dir / "reviewdog.json"
+    },
+    LocalRootProject / warningsReviewdogDiagnosticFormat := {
+      val result = rdf.DiagnosticResult.fromWarnings(
+        (LocalRootProject / warningsAll).value
+      )
+      val f = (LocalRootProject / warningsReviewdogDiagnosticFormatFile).value
+      streams.value.log.info(s"write to ${f}")
+      IO.write(f, result.toJsonString)
+      result
     },
     LocalRootProject / warningsPrevious := {
       val f = (LocalRootProject / warningsPreviousFile).value
