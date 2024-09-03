@@ -2,8 +2,7 @@ package warning_diff.rdf
 
 case class DiagnosticResult(
   diagnostics: Seq[Diagnostic],
-  source: Option[Source],
-  severity: Option[Severity]
+  source: Option[Source]
 )
 
 object DiagnosticResult {
@@ -19,20 +18,13 @@ object DiagnosticResult {
               column = w.position.startColumn
             )
           ),
-          severity = Some(Severity.Warning),
-          source = None,
-          code = None,
-          suggestions = Nil,
-          original_output = None,
-          related_locations = Nil
+          severity = Some(Severity.Warning)
         )
       },
       source = Some(
         Source(
-          name = "Scala",
-          url = None
+          name = "Scala"
         )
-      ),
-      severity = None
+      )
     )
 }

@@ -1,3 +1,15 @@
 package warning_diff.rdf
 
-case class Source(name: String, url: Option[String])
+import sjsonnew.BasicJsonProtocol.*
+import sjsonnew.JsonFormat
+
+case class Source(
+  name: String
+)
+
+object Source {
+  implicit val instance: JsonFormat[Source] =
+    caseClass1(apply, unapply)(
+      "name"
+    )
+}
