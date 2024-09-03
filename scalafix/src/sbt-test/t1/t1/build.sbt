@@ -1,6 +1,6 @@
 def Scala212 = "2.12.19"
 def Scala213 = "2.13.14"
-def Scala3 = "3.3.1"
+def Scala3 = "3.3.3"
 
 val baseSettings = Def.settings(
   scalacOptions += "-deprecation"
