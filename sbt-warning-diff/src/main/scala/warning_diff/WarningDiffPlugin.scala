@@ -54,7 +54,7 @@ object WarningDiffPlugin extends AutoPlugin {
           case _ =>
             r.problems().toSeq
         }
-        values.map(Warning.fromSbt).toSeq
+        values.map(Warning.fromSbt).toSeq.distinct
       }
     )
   }
@@ -137,25 +137,28 @@ object WarningDiffPlugin extends AutoPlugin {
       }
     }.value,
     LocalRootProject / warningsAll := {
-      val result = Def.taskDyn {
-        val extracted = Project.extract(state.value)
-        val currentBuildUri = extracted.currentRef.build
-        extracted.structure.units
-          .apply(currentBuildUri)
-          .defined
-          .values
-          .filter(
-            _.autoPlugins.contains(WarningDiffPlugin)
-          )
-          .toList
-          .flatMap { p =>
-            warningConfigs.map { x =>
-              LocalProject(p.id) / x / warnings
+      val result = Def
+        .taskDyn {
+          val extracted = Project.extract(state.value)
+          val currentBuildUri = extracted.currentRef.build
+          extracted.structure.units
+            .apply(currentBuildUri)
+            .defined
+            .values
+            .filter(
+              _.autoPlugins.contains(WarningDiffPlugin)
+            )
+            .toList
+            .flatMap { p =>
+              warningConfigs.map { x =>
+                LocalProject(p.id) / x / warnings
+              }
             }
-          }
-          .join
-          .map(_.flatten)
-      }.value
+            .join
+            .map(_.flatten)
+        }
+        .value
+        .distinct
       (LocalRootProject / warningsCurrentFile).?.value match {
         case Some(f) =>
           streams.value.log.info(s"write to ${f}")

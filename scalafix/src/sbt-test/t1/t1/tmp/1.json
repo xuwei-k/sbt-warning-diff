@@ -53,17 +53,6 @@
     "endColumn": 14
   }
 }, {
-  "message": "[UnusedTypeParams] maybe unused type param",
-  "position": {
-    "line": 5,
-    "lineContent": "  def x3[C]: Int = 3",
-    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
-    "startLine": 5,
-    "startColumn": 9,
-    "endLine": 5,
-    "endColumn": 10
-  }
-}, {
   "message": "[FindHoge] hogehoge",
   "position": {
     "line": 3,

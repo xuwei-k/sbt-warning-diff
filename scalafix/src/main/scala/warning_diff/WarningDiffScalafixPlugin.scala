@@ -183,6 +183,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             }
             .flatten
             .filter(_.position.sourcePath.nonEmpty)
+            .distinct
         }
       )
     }
