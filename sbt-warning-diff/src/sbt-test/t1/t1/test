@@ -17,3 +17,7 @@ $ must-mirror target/warnings/warnings.diff tmp/warnings.diff
 
 > warningsReviewdogDiagnosticFormat
 $ must-mirror target/warnings/reviewdog.json tmp/reviewdog.json
+
+$ copy-flat tmp/ErrorFile.scala a1/src/main/scala/
+> warningsReviewdogDiagnosticFormat
+$ must-mirror target/warnings/reviewdog.json tmp/reviewdog-error.json

@@ -8,7 +8,6 @@ import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
 import warning_diff.JsonClassOps.*
-import xsbti.Severity
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
@@ -26,6 +25,8 @@ object WarningDiffPlugin extends AutoPlugin {
     )
   }
 
+  private val warningsInternalReporter = taskKey[xsbti.Reporter]("").withRank(KeyRanks.Invisible)
+
   import autoImport.*
 
   type WarningDiff = List[String]
@@ -42,17 +43,32 @@ object WarningDiffPlugin extends AutoPlugin {
 
   private[warning_diff] val warningConfigs = Seq(Compile, Test)
 
+  // https://github.com/sbt/sbt/blob/8ead89691f9466cba698c/main/src/main/scala/sbt/Keys.scala#L640-L641
+  private val sbtCompilerReporterInternalKey = TaskKey[xsbti.Reporter]("compilerReporter").withRank(KeyRanks.DTask)
+
   override def projectSettings: Seq[Def.Setting[?]] = warningConfigs.flatMap { x =>
-    (x / warnings) := {
-      val analysis = (x / Keys.compile).value match {
-        case a: Analysis => a
+    Def.settings(
+      (x / compile / warningsInternalReporter) := new ErrrorReporter,
+      (x / compile / sbtCompilerReporterInternalKey) := {
+        new MultiReporter(
+          mainReporter = (x / compile / sbtCompilerReporterInternalKey).value,
+          consumeOnly = (x / compile / warningsInternalReporter).value
+        )
+      },
+      (x / warnings) := {
+        val r = (x / compile / sbtCompilerReporterInternalKey).value
+        val values = (x / Keys.compile).result.value match {
+          case Inc(_) =>
+            r.problems().toSeq
+          case Value(a: Analysis) =>
+            a.infos.allInfos.values.flatMap(i => i.getReportedProblems ++ i.getUnreportedProblems)
+          case _ =>
+            Nil
+        }
+        r.reset()
+        values.map(Warning.fromSbt).toSeq
       }
-      val problems = analysis.infos.allInfos.values.flatMap(i => i.getReportedProblems ++ i.getUnreportedProblems)
-      problems.collect {
-        case p if p.severity() == Severity.Warn =>
-          Warning.fromSbt(p)
-      }.toSeq
-    }
+    )
   }
 
   private[this] def dir = "warnings"

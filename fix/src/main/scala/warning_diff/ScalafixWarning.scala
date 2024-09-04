@@ -5,6 +5,7 @@ import java.io.File
 import sbt.io.IO
 import scala.jdk.CollectionConverters.*
 import scala.meta.inputs.Input
+import scalafix.lint.LintSeverity
 import scalafix.lint.RuleDiagnostic
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
@@ -81,7 +82,17 @@ object ScalafixWarning {
         warnings = diagnostics.map { x =>
           warning_diff.Warning(
             message = s"[${x.diagnostic.id.fullID}] ${x.diagnostic.message}",
-            position = convertPosition(x.input, x.diagnostic.position)
+            position = convertPosition(x.input, x.diagnostic.position),
+            severity = {
+              x.diagnostic.severity match {
+                case LintSeverity.Warning =>
+                  None
+                case LintSeverity.Info =>
+                  Some("INFO")
+                case LintSeverity.Error =>
+                  Some("ERROR")
+              }
+            }
           )
         }
       )

@@ -42,7 +42,7 @@ object DiagnosticResult {
               )
             )
           ),
-          severity = Some("WARNING")
+          severity = w.severity.orElse(Some("WARNING"))
         )
       },
       source = Some(
