@@ -1,4 +1,4 @@
-7,18d6
+7,15d6
 < ${BASE}/a1/src/main/scala/A1.scala
 <   def x1: Stream[Int] = ???
 < type Stream in package scala is deprecated since 2.13.0: Use LazyList instead of Stream
@@ -8,10 +8,7 @@
 < ${BASE}/a1/src/main/scala/A1.scala
 <   def x3[C]: Int = 3
 < [UnusedTypeParams] maybe unused type param
-< ${BASE}/a1/src/main/scala/A1.scala
-<   def x3[C]: Int = 3
-< [UnusedTypeParams] maybe unused type param
-23,24c11,12
+20,21c11,12
 <   def hoge = "aaa"
 < [FindHoge] hogehoge
 ---

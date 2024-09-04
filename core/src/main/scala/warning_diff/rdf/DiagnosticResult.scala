@@ -44,7 +44,7 @@ object DiagnosticResult {
           ),
           severity = w.severity.orElse(Some("WARNING"))
         )
-      },
+      }.distinct,
       source = Some(
         Source(
           name = "scala"
