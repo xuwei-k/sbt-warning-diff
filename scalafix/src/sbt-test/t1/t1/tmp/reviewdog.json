@@ -9,8 +9,7 @@
           "column": 10
         },
         "end": {
-          "line": 2,
-          "column": 14
+          "line": 2
         }
       }
     },
@@ -25,8 +24,7 @@
           "column": 6
         },
         "end": {
-          "line": 3,
-          "column": 10
+          "line": 3
         }
       }
     },
@@ -41,8 +39,7 @@
           "column": 35
         },
         "end": {
-          "line": 2,
-          "column": 46
+          "line": 2
         }
       }
     },
