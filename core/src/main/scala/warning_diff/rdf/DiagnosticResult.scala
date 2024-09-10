@@ -38,7 +38,11 @@ object DiagnosticResult {
               ),
               end = Position(
                 line = w.position.endLine.orElse(w.position.line),
-                column = w.position.endColumn
+                column = {
+                  // on purpose set `None`
+                  // don't use `w.position.endColumn`
+                  None
+                }
               )
             )
           ),
