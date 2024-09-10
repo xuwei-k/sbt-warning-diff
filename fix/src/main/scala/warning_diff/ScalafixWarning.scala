@@ -106,7 +106,7 @@ object ScalafixWarning {
 
   private def convertPosition(input: Input.VirtualFile, p: scala.meta.Position): Pos = {
     Pos(
-      line = Some(p.startLine),
+      line = Some(p.startLine + 1),
       lineContent = input.value.linesIterator.drop(p.startLine).next(),
       offset = None,
       pointer = None,
@@ -114,9 +114,9 @@ object ScalafixWarning {
       sourcePath = Some(input.path),
       startOffset = None,
       endOffset = None,
-      startLine = Some(p.startLine),
+      startLine = Some(p.startLine + 1),
       startColumn = Some(p.startColumn),
-      endLine = Some(p.endLine),
+      endLine = Some(p.endLine + 1),
       endColumn = Some(p.endColumn)
     )
   }

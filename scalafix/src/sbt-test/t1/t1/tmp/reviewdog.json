@@ -5,11 +5,11 @@
       "path": "a1/src/main/scala-3/Y.scala",
       "range": {
         "start": {
-          "line": 2,
+          "line": 3,
           "column": 10
         },
         "end": {
-          "line": 2
+          "line": 3
         }
       }
     },
@@ -20,11 +20,11 @@
       "path": "a1/src/main/scala-2.12/Y.scala",
       "range": {
         "start": {
-          "line": 3,
+          "line": 4,
           "column": 6
         },
         "end": {
-          "line": 3
+          "line": 4
         }
       }
     },
