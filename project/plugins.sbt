@@ -5,7 +5,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.21")
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.4.0")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.2.1")
 addSbtPlugin("com.eed3si9n" % "sbt-projectmatrix" % "0.10.0")
-addSbtPlugin("com.github.xuwei-k" % "warning-diff-scalafix-plugin" % "0.4.4")
+addSbtPlugin("com.github.xuwei-k" % "warning-diff-scalafix-plugin" % "0.4.5")
 
 scalacOptions ++= Seq(
   "-deprecation",
