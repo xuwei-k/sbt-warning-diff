@@ -1,0 +1,3 @@
+> warningsAll
+$ exists target/warnings/warnings.json
+$ must-mirror target/warnings/warnings.json 1.json

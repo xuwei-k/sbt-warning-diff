@@ -118,9 +118,13 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             .taskDyn {
               subProjects.value
                 .withFilter(p =>
-                  s.getSetting(LocalProject(p.id) / scalaBinaryVersion) == Some(
-                    sbt.librarymanagement.CrossVersion.binaryScalaVersion(scalaV)
-                  )
+                  s.getSetting(LocalProject(p.id) / scalaBinaryVersion).exists { v =>
+                    val x = sbt.librarymanagement.CrossVersion.binaryScalaVersion(scalaV)
+
+                    (v == x) || (
+                      (x == "2.13") && (v == "3")
+                    )
+                  }
                 )
                 .map(p => LocalProject(p.id) / ScalafixConfig / products)
                 .join
