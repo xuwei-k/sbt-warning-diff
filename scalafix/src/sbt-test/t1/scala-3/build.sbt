@@ -1,4 +1,4 @@
-def Scala213 = "2.13.14"
+def Scala213 = "2.13.15"
 def Scala3 = "3.5.0"
 
 val baseSettings = Def.settings(
