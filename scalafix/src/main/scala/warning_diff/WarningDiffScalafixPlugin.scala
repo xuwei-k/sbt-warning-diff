@@ -133,7 +133,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             .flatten
 
           val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
-            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
+            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.full,
             "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
