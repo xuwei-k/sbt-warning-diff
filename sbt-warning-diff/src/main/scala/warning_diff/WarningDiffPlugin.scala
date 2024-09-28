@@ -80,7 +80,7 @@ object WarningDiffPlugin extends AutoPlugin {
       )
       val f = (LocalRootProject / warningsReviewdogDiagnosticFormatFile).value
       streams.value.log.info(s"write to ${f}")
-      IO.write(f, result.toJsonString)
+      IO.write(f, result.toJsonString + "\n")
       result
     },
     LocalRootProject / warningsPrevious := {
@@ -162,7 +162,7 @@ object WarningDiffPlugin extends AutoPlugin {
       (LocalRootProject / warningsCurrentFile).?.value match {
         case Some(f) =>
           streams.value.log.info(s"write to ${f}")
-          IO.write(f, result.toJsonString)
+          IO.write(f, result.toJsonString + "\n")
         case None =>
           streams.value.log.warn(s"${warningsDiffFile.key.label} undefined")
       }
