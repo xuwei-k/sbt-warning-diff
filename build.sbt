@@ -38,8 +38,17 @@ val commonSettings = Def.settings(
     <connection>scm:git:git@github.com:xuwei-k/sbt-warning-diff.git</connection>
     <tag>{tagOrHash.value}</tag>
   </scm>,
+  scalacOptions ++= {
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
+      case "2.13" =>
+        Seq("-Xsource:3-cross")
+      case _ =>
+        Seq("-Xsource:3")
+    }
+  },
   scalacOptions ++= Seq(
-    "-Xsource:3",
     "-deprecation",
     "-unchecked",
     "-Xlint",
