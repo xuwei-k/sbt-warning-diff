@@ -9,7 +9,7 @@ case class FixInput(
   projects: Seq[SubProject],
   base: String,
   output: String
-) {
+) extends FixInputCompat {
   override def toString = this.toJsonString
 }
 
@@ -22,13 +22,13 @@ object FixInput {
     scalacOptions: Seq[String],
     scalaVersion: String,
     dialect: Dialect
-  ) {
+  ) extends SubProjectCompat {
     override def toString = this.toJsonString
   }
 
   object SubProject {
     implicit val instance: JsonFormat[SubProject] =
-      caseClass7(apply, unapply)(
+      caseClass7(apply, (_: SubProject).toTupleOption)(
         "project-id",
         "sbt-config",
         "scalafix-config",
@@ -40,7 +40,7 @@ object FixInput {
   }
 
   implicit val instance: JsonFormat[FixInput] =
-    caseClass3(apply, unapply)(
+    caseClass3(apply, (_: FixInput).toTupleOption)(
       "projects",
       "base",
       "output"

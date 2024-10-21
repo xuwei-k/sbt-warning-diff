@@ -6,7 +6,7 @@ import sjsonnew.JsonFormat
 import xsbti.Problem
 import xsbti.Severity
 
-case class Warning(message: String, position: Pos, severity: Option[String]) {
+case class Warning(message: String, position: Pos, severity: Option[String]) extends WarningCompat {
   import JsonClassOps.*
   override def toString = this.toJsonString
 }
@@ -33,7 +33,7 @@ object Warning {
     )
   }
   implicit val instance: JsonFormat[Warning] = {
-    implicit val position: JsonFormat[Pos] = BasicJsonProtocol.caseClass12(Pos.apply, Pos.unapply)(
+    implicit val position: JsonFormat[Pos] = BasicJsonProtocol.caseClass12(Pos.apply, (_: Pos).toTupleOption)(
       "line",
       "lineContent",
       "offset",
@@ -47,7 +47,7 @@ object Warning {
       "endLine",
       "endColumn"
     )
-    caseClass3(Warning.apply, Warning.unapply)(
+    caseClass3(Warning.apply, (_: Warning).toTupleOption)(
       "message",
       "position",
       "severity"

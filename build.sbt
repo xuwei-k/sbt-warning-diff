@@ -2,6 +2,7 @@ import ReleaseTransformations.*
 
 def Scala212 = "2.12.20"
 def Scala213 = "2.13.15"
+def Scala3 = "3.3.4"
 
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
@@ -88,14 +89,28 @@ val pluginSettings = Def.settings(
   )
 )
 
+val sbtVersionForCross = Def.setting(
+  scalaBinaryVersion.value match {
+    case "2.12" =>
+      sbtVersion.value
+    case _ =>
+      "2.0.0-M2"
+  }
+)
+
 val core = projectMatrix
   .settings(
     commonSettings,
     name := "warning-diff-core",
-    libraryDependencies += "org.scala-sbt" % "util-interface" % sbtVersion.value,
+    libraryDependencies += "org.scala-sbt" % "util-interface" % sbtVersionForCross.value,
     libraryDependencies += {
       // Don't update. use same version as sbt
-      "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1" // scala-steward:off
+      scalaBinaryVersion.value match {
+        case "3" =>
+          "com.eed3si9n" %% "sjson-new-scalajson" % "0.14.0-M1"
+        case _ =>
+          "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1" // scala-steward:off
+      }
     },
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoObject := "WarningDiffBuildInfo",
@@ -104,7 +119,7 @@ val core = projectMatrix
   .defaultAxes(VirtualAxis.jvm)
   .enablePlugins(BuildInfoPlugin)
   .jvmPlatform(
-    Seq(Scala212, Scala213)
+    Seq(Scala212, Scala213, Scala3)
   )
 
 val plugin = project

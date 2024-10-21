@@ -12,7 +12,7 @@ case class Source(
 
 object Source {
   implicit val instance: JsonFormat[Source] =
-    caseClass1(apply, unapply)(
+    caseClass1(apply, (x: Source) => Option(x.name))(
       "name"
     )
 }
