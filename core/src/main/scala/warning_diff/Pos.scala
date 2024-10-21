@@ -15,7 +15,7 @@ case class Pos(
   startColumn: Option[Int],
   endLine: Option[Int],
   endColumn: Option[Int]
-)
+) extends PosCompat
 
 object Pos {
 
