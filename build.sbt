@@ -134,13 +134,17 @@ val plugin = projectMatrix
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
-    name := "sbt-warning-diff"
+    name := "sbt-warning-diff",
+    pluginCrossBuild / sbtVersion := sbtVersionForCross.value
   )
   .dependsOn(
     core
   )
+  .jvmPlatform(
+    Seq(Scala212, Scala3)
+  )
 
-val scalafixPlugin = project
+val scalafixPlugin = projectMatrix
   .in(file("scalafix"))
   .enablePlugins(SbtPlugin)
   .settings(
@@ -148,7 +152,11 @@ val scalafixPlugin = project
     addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.4"),
     name := "warning-diff-scalafix-plugin"
   )
-  .dependsOn(plugin.jvm(Scala212))
+  .dependsOn(plugin)
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212, Scala3)
+  )
 
 val fix = projectMatrix
   .in(file("fix"))

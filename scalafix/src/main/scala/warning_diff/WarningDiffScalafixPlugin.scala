@@ -17,7 +17,9 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   object autoImport {
+    @transient
     val warningsScalafixConfig = taskKey[FixInput.SubProject]("")
+    @transient
     val warningsScalafix = taskKey[Seq[FixOutput]]("")
     val warningsScalafixScalaVersion = settingKey[String]("")
   }

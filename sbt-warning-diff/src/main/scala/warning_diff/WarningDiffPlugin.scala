@@ -1,9 +1,9 @@
 package warning_diff
 
-import sbt.*
 import sbt.Keys.*
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
+import sbt.{*, given}
 import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
@@ -15,12 +15,18 @@ object WarningDiffPlugin extends AutoPlugin {
     val warningsDiffFile = settingKey[File]("")
     val warningsCurrentFile = settingKey[File]("")
     val warningsPreviousFile = settingKey[File]("")
+    @transient
     val warnings = taskKey[Warnings]("")
+    @transient
     val warningsDiff = taskKey[WarningDiff]("")
+    @transient
     val warningsAll = taskKey[Warnings]("")
+    @transient
     val warningsPrevious = taskKey[Option[Warnings]]("")
 
+    @transient
     val warningsReviewdogDiagnosticFormatFile = taskKey[File]("")
+    @transient
     val warningsReviewdogDiagnosticFormat = taskKey[warning_diff.rdf.DiagnosticResult](
       "https://github.com/reviewdog/reviewdog/tree/a9298ff2720c4b0/proto/rdf"
     )
