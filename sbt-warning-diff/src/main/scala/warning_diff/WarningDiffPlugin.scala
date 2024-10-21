@@ -1,9 +1,9 @@
 package warning_diff
 
-import sbt.*
 import sbt.Keys.*
 import sbt.internal.inc.Analysis
 import sbt.plugins.JvmPlugin
+import sbt.{*, given}
 import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
@@ -48,8 +48,8 @@ object WarningDiffPlugin extends AutoPlugin {
     Def.settings(
       (x / warnings) := {
         val r = (x / compile / sbtCompilerReporterInternalKey).value
-        val values = (x / compile).result.value match {
-          case Value(a: Analysis) =>
+        val values = (x / compile).result.value.toEither match {
+          case Right(a: Analysis) =>
             a.infos.allInfos.values.flatMap(i => i.getReportedProblems ++ i.getUnreportedProblems)
           case _ =>
             r.problems().toSeq

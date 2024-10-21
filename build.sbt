@@ -122,18 +122,29 @@ val core = projectMatrix
     Seq(Scala212, Scala213, Scala3)
   )
 
-val plugin = project
+val plugin = projectMatrix
   .in(file("sbt-warning-diff"))
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
-    name := "sbt-warning-diff"
+    name := "sbt-warning-diff",
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "3" =>
+          "2.0.0-M2"
+        case _ =>
+          (pluginCrossBuild / sbtVersion).value
+      }
+    }
   )
   .dependsOn(
-    LocalProject("core2_12")
+    core
+  )
+  .jvmPlatform(
+    Seq(Scala212, Scala3)
   )
 
-val scalafixPlugin = project
+val scalafixPlugin = projectMatrix
   .in(file("scalafix"))
   .enablePlugins(SbtPlugin)
   .settings(
@@ -142,6 +153,10 @@ val scalafixPlugin = project
     name := "warning-diff-scalafix-plugin"
   )
   .dependsOn(plugin)
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(
+    Seq(Scala212)
+  )
 
 val fix = projectMatrix
   .in(file("fix"))
