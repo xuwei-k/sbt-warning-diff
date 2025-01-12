@@ -1,4 +1,3 @@
-def Scala213 = "2.13.16"
 def Scala3 = "3.6.2"
 
 val baseSettings = Def.settings(
@@ -16,7 +15,7 @@ val myScalafix = project
   .disablePlugins(ScalafixPlugin)
   .settings(
     baseSettings,
-    scalaVersion := Scala213,
+    scalaVersion := _root_.scalafix.sbt.BuildInfo.scala213,
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     Compile / resourceGenerators += Def.task {
       val rules = (Compile / compile).value
