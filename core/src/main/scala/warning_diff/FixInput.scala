@@ -6,22 +6,22 @@ import warning_diff.FixInput.SubProject
 import warning_diff.JsonClassOps.*
 
 case class FixInput(
-  projects: Seq[SubProject],
-  base: String,
-  output: String
+    projects: Seq[SubProject],
+    base: String,
+    output: String
 ) extends FixInputCompat {
   override def toString = this.toJsonString
 }
 
 object FixInput {
   case class SubProject(
-    projectId: String,
-    sbtConfig: String,
-    scalafixConfig: String,
-    sources: Seq[String],
-    scalacOptions: Seq[String],
-    scalaVersion: String,
-    dialect: Dialect
+      projectId: String,
+      sbtConfig: String,
+      scalafixConfig: String,
+      sources: Seq[String],
+      scalacOptions: Seq[String],
+      scalaVersion: String,
+      dialect: Dialect
   ) extends SubProjectCompat {
     override def toString = this.toJsonString
   }

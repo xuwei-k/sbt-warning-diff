@@ -5,8 +5,8 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class Location(
-  path: String,
-  range: Range
+    path: String,
+    range: Range
 ) extends LocationCompat {
   override def toString = this.toJsonString
 }

@@ -5,8 +5,8 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class DiagnosticResult(
-  diagnostics: Seq[Diagnostic],
-  source: Option[Source]
+    diagnostics: Seq[Diagnostic],
+    source: Option[Source]
 ) extends DiagnosticResultCompat {
   override def toString = this.toJsonString
 }

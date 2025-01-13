@@ -15,8 +15,8 @@ import warning_diff.JsonClassOps.*
 
 object ScalafixWarning {
   private case class Result(
-    input: Input.VirtualFile,
-    diagnostic: RuleDiagnostic
+      input: Input.VirtualFile,
+      diagnostic: RuleDiagnostic
   )
 
   def main(args: Array[String]): Unit = {

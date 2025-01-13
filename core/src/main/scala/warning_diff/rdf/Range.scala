@@ -5,8 +5,8 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class Range(
-  start: Position,
-  end: Position
+    start: Position,
+    end: Position
 ) extends RangeCompat {
   override def toString = this.toJsonString
 }

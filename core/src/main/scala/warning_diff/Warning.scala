@@ -13,8 +13,8 @@ case class Warning(message: String, position: Pos, severity: Option[String]) ext
 
 object Warning {
   def apply(
-    message: String,
-    position: Pos
+      message: String,
+      position: Pos
   ): Warning = apply(
     message = message,
     position = position,

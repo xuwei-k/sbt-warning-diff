@@ -5,7 +5,7 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class Source(
-  name: String
+    name: String
 ) {
   override def toString = this.toJsonString
 }

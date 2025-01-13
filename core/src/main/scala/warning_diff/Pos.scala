@@ -3,18 +3,18 @@ package warning_diff
 import xsbti.Position
 
 case class Pos(
-  line: Option[Int],
-  lineContent: String,
-  offset: Option[Int],
-  pointer: Option[Int],
-  pointerSpace: Option[String],
-  sourcePath: Option[String],
-  startOffset: Option[Int],
-  endOffset: Option[Int],
-  startLine: Option[Int],
-  startColumn: Option[Int],
-  endLine: Option[Int],
-  endColumn: Option[Int]
+    line: Option[Int],
+    lineContent: String,
+    offset: Option[Int],
+    pointer: Option[Int],
+    pointerSpace: Option[String],
+    sourcePath: Option[String],
+    startOffset: Option[Int],
+    endOffset: Option[Int],
+    startLine: Option[Int],
+    startColumn: Option[Int],
+    endLine: Option[Int],
+    endColumn: Option[Int]
 ) extends PosCompat
 
 object Pos {

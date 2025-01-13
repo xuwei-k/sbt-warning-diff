@@ -5,9 +5,9 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class FixOutput(
-  projectId: String,
-  sbtConfig: String,
-  warnings: Seq[Warning]
+    projectId: String,
+    sbtConfig: String,
+    warnings: Seq[Warning]
 ) extends FixOutputCompat {
   override def toString = this.toJsonString
 }

@@ -5,9 +5,9 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class Diagnostic(
-  message: String,
-  location: Location,
-  severity: Option[String]
+    message: String,
+    location: Location,
+    severity: Option[String]
 ) extends DiagnosticCompat {
   override def toString = this.toJsonString
 }

@@ -5,8 +5,8 @@ import sjsonnew.JsonFormat
 import warning_diff.JsonClassOps.*
 
 case class Position(
-  line: Option[Int],
-  column: Option[Int]
+    line: Option[Int],
+    column: Option[Int]
 ) extends PositionCompat {
   override def toString = this.toJsonString
 }
