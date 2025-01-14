@@ -1,7 +1,7 @@
 import ReleaseTransformations.*
 
 def Scala212 = "2.12.20"
-def Scala213 = "2.13.15"
+def Scala213 = "2.13.16"
 def Scala3 = "3.3.4"
 
 val tagName = Def.setting {
@@ -138,7 +138,7 @@ val scalafixPlugin = project
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
-    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.13.0"),
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.0"),
     name := "warning-diff-scalafix-plugin"
   )
   .dependsOn(plugin)
@@ -149,7 +149,7 @@ val fix = projectMatrix
     commonSettings,
     name := "warning-diff-scalafix",
     libraryDependencies += "org.scala-sbt" %% "io" % "1.10.4",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.13.0"
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.0"
   )
   .dependsOn(core)
   .defaultAxes(VirtualAxis.jvm)
