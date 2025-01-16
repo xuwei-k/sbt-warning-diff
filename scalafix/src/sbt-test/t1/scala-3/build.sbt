@@ -16,6 +16,7 @@ val myScalafix = project
   .settings(
     baseSettings,
     scalaVersion := _root_.scalafix.sbt.BuildInfo.scala213,
+    scalacOptions += "-Xsource:3-cross",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     Compile / resourceGenerators += Def.task {
       val rules = (Compile / compile).value
