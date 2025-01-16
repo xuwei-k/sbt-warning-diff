@@ -2,7 +2,7 @@ package fix
 
 import scala.meta.Term
 import scalafix.lint.LintSeverity
-import scalafix.v1._
+import scalafix.v1.*
 
 class FindHoge extends SyntacticRule("FindHoge") {
 
