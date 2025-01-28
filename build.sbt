@@ -2,7 +2,7 @@ import ReleaseTransformations.*
 
 def Scala212 = "2.12.20"
 def Scala213 = "2.13.16"
-def Scala3 = "3.3.4"
+def Scala3 = "3.3.5"
 
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
