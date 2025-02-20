@@ -138,7 +138,7 @@ val scalafixPlugin = project
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
-    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.0"),
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.2"),
     name := "warning-diff-scalafix-plugin"
   )
   .dependsOn(plugin)
@@ -149,7 +149,7 @@ val fix = projectMatrix
     commonSettings,
     name := "warning-diff-scalafix",
     libraryDependencies += "org.scala-sbt" %% "io" % "1.10.4",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.0"
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.2"
   )
   .dependsOn(core)
   .defaultAxes(VirtualAxis.jvm)
