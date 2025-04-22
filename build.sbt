@@ -85,6 +85,7 @@ val pluginSettings = Def.settings(
     javaVmArgs.filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dsbt.log.noformat").exists(a.startsWith))
   },
   scriptedLaunchOpts ++= Seq(
+    "-Dxuwei.scalafix-rules.version=" + xuweiScalafixRules.revision,
     "-Dplugin.version=" + version.value
   )
 )
@@ -169,3 +170,7 @@ inThisBuild(
     }
   )
 )
+
+lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.6"
+
+ThisBuild / scalafixDependencies += xuweiScalafixRules
