@@ -48,8 +48,8 @@ object WarningDiffPlugin extends AutoPlugin {
     Def.settings(
       (x / warnings) := {
         val r = (x / compile / sbtCompilerReporterInternalKey).value
-        val values = (x / compile).result.value match {
-          case Value(a: Analysis) =>
+        val values = (x / compile).result.value.toEither match {
+          case Right(a: Analysis) =>
             a.infos.allInfos.values.flatMap(i => i.getReportedProblems ++ i.getUnreportedProblems)
           case _ =>
             r.problems().toSeq
@@ -101,7 +101,7 @@ object WarningDiffPlugin extends AutoPlugin {
             val order: Ordering[Warning] = Ordering.by(x => (x.position.sourcePath, x.position.line, x.message))
             def format(warnings: Warnings): Seq[String] = {
               warnings
-                .sorted(order)
+                .sorted(using order)
                 .flatMap(a => List(a.position.sourcePath.getOrElse(""), a.position.lineContent, a.message))
             }
 
