@@ -8,6 +8,7 @@ import sjsonnew.BasicJsonProtocol.*
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
 import warning_diff.JsonClassOps.*
+import warning_diff.WarningDiffPluginCompat.*
 
 object WarningDiffPlugin extends AutoPlugin {
   object autoImport {
@@ -46,7 +47,7 @@ object WarningDiffPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] = warningConfigs.flatMap { x =>
     Def.settings(
-      (x / warnings) := {
+      (x / warnings) := Def.uncached {
         val r = (x / compile / sbtCompilerReporterInternalKey).value
         val values = (x / compile).result.value.toEither match {
           case Right(a: Analysis) =>
