@@ -2,7 +2,7 @@ import ReleaseTransformations.*
 
 def Scala212 = "2.12.20"
 def Scala213 = "2.13.16"
-def Scala3 = "3.3.6"
+def Scala3 = "3.7.2"
 
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
@@ -74,8 +74,18 @@ val commonSettings = Def.settings(
   publishTo := sonatypePublishToBundle.value
 )
 
+val sbtVersionForCross = Def.setting(
+  scalaBinaryVersion.value match {
+    case "2.12" =>
+      sbtVersion.value
+    case _ =>
+      "2.0.0-RC2"
+  }
+)
+
 val pluginSettings = Def.settings(
   commonSettings,
+  pluginCrossBuild / sbtVersion := sbtVersionForCross.value,
   scriptedBufferLog := false,
   scriptedLaunchOpts ++= {
     val javaVmArgs = {
@@ -88,15 +98,6 @@ val pluginSettings = Def.settings(
     "-Dxuwei.scalafix-rules.version=" + xuweiScalafixRules.revision,
     "-Dplugin.version=" + version.value
   )
-)
-
-val sbtVersionForCross = Def.setting(
-  scalaBinaryVersion.value match {
-    case "2.12" =>
-      sbtVersion.value
-    case _ =>
-      "2.0.0-RC2"
-  }
 )
 
 val core = projectMatrix
@@ -123,15 +124,18 @@ val core = projectMatrix
     Seq(Scala212, Scala213, Scala3)
   )
 
-val plugin = project
+val plugin = projectMatrix
   .in(file("sbt-warning-diff"))
+  .jvmPlatform(
+    Seq(Scala212, Scala3)
+  )
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
     name := "sbt-warning-diff"
   )
   .dependsOn(
-    LocalProject("core2_12")
+    core
   )
 
 val scalafixPlugin = project
@@ -142,7 +146,7 @@ val scalafixPlugin = project
     addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.3"),
     name := "warning-diff-scalafix-plugin"
   )
-  .dependsOn(plugin)
+  .dependsOn(plugin.jvm(Scala212))
 
 val fix = projectMatrix
   .in(file("fix"))
