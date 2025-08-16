@@ -79,7 +79,7 @@ val sbtVersionForCross = Def.setting(
     case "2.12" =>
       sbtVersion.value
     case _ =>
-      "2.0.0-RC2"
+      "2.0.0-RC3"
   }
 )
 
@@ -109,7 +109,7 @@ val core = projectMatrix
       // Don't update. use same version as sbt
       scalaBinaryVersion.value match {
         case "3" =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % "0.14.0-M2"
+          "com.eed3si9n" %% "sjson-new-scalajson" % "0.14.0-M4"
         case _ =>
           "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1" // scala-steward:off
       }
