@@ -66,12 +66,12 @@ val commonSettings = Def.settings(
     commitReleaseVersion,
     tagRelease,
     releaseStepCommandAndRemaining("publishSigned"),
-    releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+    releaseStepCommandAndRemaining("sonaRelease"),
     setNextVersion,
     commitNextVersion,
     pushChanges
   ),
-  publishTo := sonatypePublishToBundle.value
+  publishTo := (if (isSnapshot.value) None else localStaging.value)
 )
 
 val sbtVersionForCross = Def.setting(
