@@ -74,12 +74,14 @@ val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value)
 )
 
+def sbt2version = "2.0.0-RC3"
+
 val sbtVersionForCross = Def.setting(
   scalaBinaryVersion.value match {
     case "2.12" =>
       sbtVersion.value
     case _ =>
-      "2.0.0-RC3"
+      sbt2version
   }
 )
 
@@ -109,9 +111,9 @@ val core = projectMatrix
       // Don't update. use same version as sbt
       scalaBinaryVersion.value match {
         case "3" =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % "0.14.0-M4"
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbt2version, "3")
         case _ =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % "0.9.1" // scala-steward:off
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbtVersion.value, "2.12")
       }
     },
     buildInfoKeys := Seq[BuildInfoKey](version),
@@ -178,3 +180,42 @@ inThisBuild(
 lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.14"
 
 ThisBuild / scalafixDependencies += xuweiScalafixRules
+
+def sjsonNewVersion(sbtV: String, scalaBinaryV: String): String = reverseDependencyVersion(
+  "org.scala-sbt",
+  "sbt",
+  sbtV,
+  "com.eed3si9n",
+  s"sjson-new-scalajson_${scalaBinaryV}"
+)
+
+def reverseDependencyVersion(
+  baseGroupId: String,
+  baseArtifactId: String,
+  revision: String,
+  targetGroupId: String,
+  targetArtifactId: String
+): String = {
+  import lmcoursier.internal.shaded.coursier
+  val dependency = coursier.Dependency(
+    coursier.Module(
+      coursier.Organization(
+        baseGroupId
+      ),
+      coursier.ModuleName(
+        baseArtifactId
+      )
+    ),
+    revision
+  )
+  coursier.Fetch().addDependencies(dependency).runResult().detailedArtifacts.map(_._1).collect {
+    case x if (x.module.organization.value == targetGroupId) && (x.module.name.value == targetArtifactId) => x.version
+  } match {
+    case Seq(x) =>
+      x
+    case Nil =>
+      sys.error("not found")
+    case xs =>
+      sys.error(xs.toString)
+  }
+}
