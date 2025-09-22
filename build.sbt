@@ -74,7 +74,7 @@ val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value)
 )
 
-def sbt2version = "2.0.0-RC4"
+def sbt2version = "2.0.0-RC5"
 
 val sbtVersionForCross = Def.setting(
   scalaBinaryVersion.value match {
