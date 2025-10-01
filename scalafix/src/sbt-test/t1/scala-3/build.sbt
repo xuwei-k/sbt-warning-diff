@@ -1,4 +1,4 @@
-def Scala3 = "3.6.2"
+def Scala3 = "3.7.3"
 
 val baseSettings = Def.settings(
   scalaVersion := Scala3,
