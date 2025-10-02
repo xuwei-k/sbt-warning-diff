@@ -1,7 +1,7 @@
 import ReleaseTransformations.*
 
 def Scala212 = "2.12.20"
-def Scala213 = "2.13.16"
+def Scala213 = "2.13.17"
 def Scala3 = "3.7.3"
 
 val tagName = Def.setting {
@@ -170,7 +170,7 @@ publish / skip := true
 inThisBuild(
   List(
     semanticdbEnabled := true,
-    semanticdbVersion := _root_.scalafix.sbt.BuildInfo.scalametaVersion,
+    semanticdbVersion := "4.13.10",
     scalafixOnCompile := {
       sys.env.isDefinedAt("GITHUB_ACTION") == false
     }
