@@ -16,7 +16,7 @@ val myScalafix = project
   .enablePlugins(ScalafixRuleResourceGen)
   .settings(
     baseSettings,
-    scalaVersion := _root_.scalafix.sbt.BuildInfo.scala213,
+    scalaVersion := "2.13.17",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     Compile / resources := {
       val output = (Compile / resourceManaged).value / "META-INF" / "services" / "scalafix.v1.Rule"

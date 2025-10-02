@@ -95,7 +95,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
         case "2.12" =>
           _root_.scalafix.sbt.BuildInfo.scala212
         case _ =>
-          _root_.scalafix.sbt.BuildInfo.scala213
+          "2.13.17"
       }
     },
     ThisBuild / warningsScalafix := Def.taskDyn {
