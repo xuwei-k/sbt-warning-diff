@@ -140,9 +140,6 @@ val plugin = projectMatrix
   .dependsOn(
     core
   )
-  .jvmPlatform(
-    Seq(Scala212, Scala3)
-  )
 
 val scalafixPlugin = projectMatrix
   .in(file("scalafix"))
