@@ -26,6 +26,21 @@ val myScalafix = project
     }
   )
 
-baseSettings
-
-ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % System.getProperty("xuwei.scalafix-rules.version")
+lazy val root = project.in(file("."))
+  .aggregate(a1, myScalafix)
+  .settings(
+    baseSettings,
+    ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % System.getProperty("xuwei.scalafix-rules.version"),
+    InputKey[Unit]("check") := {
+      val expect = IO.read(file("1.json"))
+      val actual = IO.read(file(
+        sbtBinaryVersion.value match {
+          case "1.0" =>
+            "target/warnings/warnings.json"
+          case "2" =>
+            s"target/out/jvm/scala-${scalaVersion.value}/${name.value}/warnings/warnings.json"
+        }
+      ))
+      assert(expect == actual, s"$expect != $actual")
+    }
+  )
