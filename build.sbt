@@ -182,7 +182,7 @@ inThisBuild(
   )
 )
 
-lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.16"
+lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.17"
 
 ThisBuild / scalafixDependencies += xuweiScalafixRules
 
