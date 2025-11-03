@@ -17,6 +17,11 @@ val a1 = projectMatrix
   .jvmPlatform(
     Seq(Scala212, Scala3)
   )
+  .settings(
+    Compile / scalafix / unmanagedSources := {
+      (Compile / scalafix / unmanagedSources).value.filterNot(_.getName == "A3.scala")
+    }
+  )
 
 val a2 = project.settings(commonSettings)
 
