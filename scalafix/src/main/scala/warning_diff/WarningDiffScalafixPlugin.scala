@@ -85,7 +85,9 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
                 file(".scalafix.conf")
               )
           ),
-          sources = (x / unmanagedSources).value.filter(_.getName.endsWith(".scala")).map(_.getCanonicalPath),
+          sources = (x / ScalafixPlugin.autoImport.scalafix / unmanagedSources).value
+            .filter(_.getName.endsWith(".scala"))
+            .map(_.getCanonicalPath),
           scalacOptions = (x / scalacOptions).value,
           scalaVersion = scalaVersion.value,
           dialect = dialect
