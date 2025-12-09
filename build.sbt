@@ -175,7 +175,7 @@ publish / skip := true
 inThisBuild(
   List(
     semanticdbEnabled := true,
-    semanticdbVersion := "4.13.10",
+    semanticdbVersion := "4.14.2",
     scalafixOnCompile := {
       sys.env.isDefinedAt("GITHUB_ACTION") == false
     }
