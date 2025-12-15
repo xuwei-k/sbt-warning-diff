@@ -22,6 +22,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     @transient
     val warningsScalafix = taskKey[Seq[FixOutput]]("")
     val warningsScalafixScalaVersion = settingKey[String]("")
+    val warningsScalafixAllowUnsafeScalaLibUpgrade = settingKey[Boolean]("")
   }
 
   import autoImport.*
@@ -94,6 +95,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
         )
       }
     },
+    ThisBuild / warningsScalafixAllowUnsafeScalaLibUpgrade := true,
     ThisBuild / warningsScalafixScalaVersion := {
       (ThisBuild / scalaBinaryVersion).value match {
         case "2.12" =>
@@ -154,8 +156,17 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
               output = outputJson.getCanonicalPath
             )
 
+            val allowUnsafeScalaLibUpgradeSetting = {
+              if ((ThisBuild / warningsScalafixAllowUnsafeScalaLibUpgrade).value) {
+                "allowUnsafeScalaLibUpgrade := true"
+              } else {
+                ""
+              }
+            }
+
             val buildSbt = Seq[String](
               s"""scalaVersion := "${scalaV}" """,
+              allowUnsafeScalaLibUpgradeSetting,
               deps
                 .map(moduleIdToString)
                 .mkString("libraryDependencies ++= Seq(\n", ",\n", "\n)")
