@@ -31,6 +31,17 @@
     "endColumn": 14
   }
 }, {
+  "message": "[FileNameConsistent] inconsistent file name and class name. names = [X1]",
+  "position": {
+    "line": 1,
+    "lineContent": "class X1 {",
+    "sourcePath": "${BASE}/a1/src/main/scala/A1.scala",
+    "startLine": 1,
+    "startColumn": 0,
+    "endLine": 7,
+    "endColumn": 1
+  }
+}, {
   "message": "[UnusedTypeParams] maybe unused type param",
   "position": {
     "line": 6,
