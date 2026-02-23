@@ -9,7 +9,7 @@ val tagName = Def.setting {
 }
 
 val tagOrHash = Def.setting {
-  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
+  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lazyLines_!.head
   else tagName.value
 }
 
@@ -74,14 +74,14 @@ val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value)
 )
 
-def sbt2version = "2.0.0-RC9"
+def sbt1version = "1.12.3"
 
 val sbtVersionForCross = Def.setting(
   scalaBinaryVersion.value match {
     case "2.12" =>
-      sbtVersion.value
+      sbt1version
     case _ =>
-      sbt2version
+      sbtVersion.value
   }
 )
 
@@ -91,7 +91,7 @@ val pluginSettings = Def.settings(
   scriptedBufferLog := false,
   scriptedLaunchOpts ++= {
     val javaVmArgs = {
-      import scala.collection.JavaConverters.*
+      import scala.jdk.CollectionConverters.*
       java.lang.management.ManagementFactory.getRuntimeMXBean.getInputArguments.asScala.toList
     }
     javaVmArgs.filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dsbt.log.noformat").exists(a.startsWith))
@@ -111,9 +111,9 @@ val core = projectMatrix
       // Don't update. use same version as sbt
       scalaBinaryVersion.value match {
         case "3" =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbt2version, "3")
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbtVersion.value, "3")
         case _ =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbtVersion.value, "2.12")
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbt1version, "2.12")
       }
     },
     buildInfoKeys := Seq[BuildInfoKey](version),
@@ -169,12 +169,13 @@ val fix = projectMatrix
     Seq(Scala212, Scala213)
   )
 
-commonSettings
+val root = rootProject.autoAggregate.settings(
+commonSettings,
 publish / skip := true
+)
 
 inThisBuild(
   List(
-    semanticdbEnabled := true,
     semanticdbVersion := "4.14.2",
     scalafixOnCompile := {
       sys.env.isDefinedAt("GITHUB_ACTION") == false
