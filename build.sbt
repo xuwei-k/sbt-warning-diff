@@ -172,16 +172,6 @@ val fix = projectMatrix
 commonSettings
 publish / skip := true
 
-inThisBuild(
-  List(
-    semanticdbEnabled := true,
-    semanticdbVersion := "4.14.2",
-    scalafixOnCompile := {
-      sys.env.isDefinedAt("GITHUB_ACTION") == false
-    }
-  )
-)
-
 lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.23"
 
 ThisBuild / scalafixDependencies += xuweiScalafixRules
