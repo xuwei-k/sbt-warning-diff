@@ -74,7 +74,7 @@ jobs:
            "scalafixPlugin3/scripted t1/scala-3"
            warningsAll
     - if: (github.event_name == 'push') && (github.ref == 'refs/heads/main')
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: warnings.json
         path: target/warnings/warnings.json
