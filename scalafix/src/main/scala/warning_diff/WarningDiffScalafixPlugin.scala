@@ -22,6 +22,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     @transient
     val warningsScalafix = taskKey[Seq[FixOutput]]("")
     val warningsScalafixScalaVersion = settingKey[String]("")
+    val warningsScalafixVersion = settingKey[String]("")
   }
 
   import autoImport.*
@@ -94,6 +95,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
         )
       }
     },
+    ThisBuild / warningsScalafixVersion := _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     ThisBuild / warningsScalafixScalaVersion := {
       (ThisBuild / scalaBinaryVersion).value match {
         case "2.12" =>
@@ -137,7 +139,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             .flatten
 
           val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
-            "ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion cross CrossVersion.full,
+            "ch.epfl.scala" %% "scalafix-rules" % (ThisBuild / warningsScalafixVersion).value cross CrossVersion.full,
             "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
