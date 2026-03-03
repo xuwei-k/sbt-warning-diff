@@ -43,18 +43,30 @@ val commonSettings = Def.settings(
     scalaBinaryVersion.value match {
       case "3" =>
         Nil
+      case _ =>
+        Seq(
+          "-release:8",
+          "-Xlint"
+        )
+    }
+  },
+  scalacOptions ++= {
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
       case "2.13" =>
         Seq("-Xsource:3-cross")
       case _ =>
-        Seq("-Xsource:3")
+        Seq(
+          "-Xsource:3",
+          "-language:higherKinds"
+        )
     }
   },
   scalacOptions ++= Seq(
     "-deprecation",
     "-unchecked",
-    "-Xlint",
     "-language:existentials",
-    "-language:higherKinds",
     "-language:implicitConversions"
   ),
   releaseTagName := tagName.value,
