@@ -61,13 +61,13 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
           case "2.11" =>
             Dialect.Scala211
           case "2.12" =>
-            if (scalacOptions.value.exists(_ startsWith "-Xsource:3")) {
+            if (scalacOptions.value.exists(_.startsWith("-Xsource:3"))) {
               Dialect.Scala212Source3
             } else {
               Dialect.Scala212
             }
           case "2.13" =>
-            if (scalacOptions.value.exists(_ startsWith "-Xsource:3")) {
+            if (scalacOptions.value.exists(_.startsWith("-Xsource:3"))) {
               Dialect.Scala213Source3
             } else {
               Dialect.Scala213
@@ -139,7 +139,8 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
             .flatten
 
           val deps = (ThisBuild / scalafixDependencies).value ++ Seq(
-            "ch.epfl.scala" %% "scalafix-rules" % (ThisBuild / warningsScalafixVersion).value cross CrossVersion.full,
+            ("ch.epfl.scala" %% "scalafix-rules" % _root_.scalafix.sbt.BuildInfo.scalafixVersion)
+              .cross(CrossVersion.full),
             "com.github.xuwei-k" %% "warning-diff-scalafix" % WarningDiffBuildInfo.version
           )
 
