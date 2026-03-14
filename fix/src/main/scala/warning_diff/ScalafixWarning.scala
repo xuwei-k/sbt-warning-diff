@@ -1,9 +1,9 @@
 package warning_diff
 
-import com.typesafe.config.ConfigFactory
 import java.io.File
+import metaconfig.ConfDecoder
+import metaconfig.generic.Surface
 import sbt.io.IO
-import scala.jdk.CollectionConverters.*
 import scala.meta.inputs.Input
 import scalafix.lint.LintSeverity
 import scalafix.lint.RuleDiagnostic
@@ -29,13 +29,33 @@ object ScalafixWarning {
     }
   }
 
+  /**
+    * @param dialectOverride [[https://github.com/scalacenter/scalafix/commit/2529c4d42ef25511c6576d17c1cc287a5515d9d2]]
+    */
+  private final case class ScalafixConfig(
+    rules: Seq[String],
+    dialectOverride: Map[String, Boolean]
+  )
+
+  private object ScalafixConfig {
+    val default = ScalafixConfig(
+      rules = Nil,
+      dialectOverride = Map.empty
+    )
+    implicit val surface: Surface[ScalafixConfig] =
+      metaconfig.generic.deriveSurface[ScalafixConfig]
+    implicit val decoder: ConfDecoder[ScalafixConfig] =
+      metaconfig.generic.deriveDecoder(default)
+  }
+
   private def run(): Unit = {
     val unbuilder = new sjsonnew.Unbuilder(sjsonnew.support.scalajson.unsafe.Converter.facade)
     val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(new File("input.json")).get
     val in = implicitly[JsonReader[FixInput]].read(Some(json), unbuilder)
     val base = new File(in.base)
     val result = in.projects.map { proj =>
-      val confRules = ConfigFactory.parseString(proj.scalafixConfig).getStringList("rules").asScala.toSet
+      val config = metaconfig.Conf.parseString(proj.scalafixConfig)(metaconfig.Hocon).get.as[ScalafixConfig].get
+      val confRules = config.rules.toSet
       val allRules = scalafix.internal.v1.Rules.all()
       val runRules = allRules
         .collect {
@@ -63,7 +83,8 @@ object ScalafixWarning {
           src
         )
         val parse = implicitly[scala.meta.parsers.Parse[scala.meta.Source]]
-        val tree = parse.apply(input = input, dialect = convertDialect(proj.dialect)).get
+        val dialect = convertDialect(proj.dialect, config.dialectOverride)
+        val tree = parse.apply(input = input, dialect = dialect).get
         val doc = SyntacticDocument.fromTree(tree)
         val map = runRules.map(rule => rule.name -> rule.fix(doc)).toMap
         scalafix.internal.patch.PatchInternals
@@ -121,20 +142,43 @@ object ScalafixWarning {
     )
   }
 
-  private def convertDialect(x: warning_diff.Dialect): scala.meta.Dialect = x match {
-    case Dialect.Scala210 =>
-      scala.meta.dialects.Scala210
-    case Dialect.Scala211 =>
-      scala.meta.dialects.Scala211
-    case Dialect.Scala212 =>
-      scala.meta.dialects.Scala212
-    case Dialect.Scala213 =>
-      scala.meta.dialects.Scala213
-    case Dialect.Scala212Source3 =>
-      scala.meta.dialects.Scala212Source3
-    case Dialect.Scala213Source3 =>
-      scala.meta.dialects.Scala213Source3
-    case Dialect.Scala3 =>
-      scala.meta.dialects.Scala3
+  private def convertDialect(x: warning_diff.Dialect, dialectOverride: Map[String, Boolean]): scala.meta.Dialect = {
+    val value = x match {
+      case Dialect.Scala210 =>
+        scala.meta.dialects.Scala210
+      case Dialect.Scala211 =>
+        scala.meta.dialects.Scala211
+      case Dialect.Scala212 =>
+        scala.meta.dialects.Scala212
+      case Dialect.Scala213 =>
+        scala.meta.dialects.Scala213
+      case Dialect.Scala212Source3 =>
+        scala.meta.dialects.Scala212Source3
+      case Dialect.Scala213Source3 =>
+        scala.meta.dialects.Scala213Source3
+      case Dialect.Scala3 =>
+        scala.meta.dialects.Scala3
+    }
+
+    // https://github.com/scalacenter/scalafix/commit/2529c4d42ef25511c6576d17c1cc287a5515d9d2
+    dialectOverride.foldLeft(value) {
+      case (cur, (k, v)) if k.nonEmpty =>
+        val upper = s"${k.head.toUpper}${k.drop(1)}"
+        cur.getClass.getMethods
+          .find(method =>
+            (
+              method.getName == s"with${upper}"
+            ) && (
+              method.getParameterTypes.toSeq == Seq(classOf[Boolean])
+            ) && (
+              method.getReturnType == classOf[scala.meta.Dialect]
+            )
+          )
+          .fold(cur)(
+            _.invoke(cur, java.lang.Boolean.valueOf(v)).asInstanceOf[scala.meta.Dialect]
+          )
+      case (cur, _) =>
+        cur
+    }
   }
 }
