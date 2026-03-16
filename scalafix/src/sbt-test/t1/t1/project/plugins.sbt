@@ -1,5 +1,7 @@
 addSbtPlugin("com.github.xuwei-k" % "warning-diff-scalafix-plugin" % System.getProperty("plugin.version"))
 
+addSbtPlugin("com.github.xuwei-k" % "scalafix-rule-resource-gen" % "0.1.2")
+
 libraryDependencies ++= {
   sbtBinaryVersion.value match {
     case "2" =>
