@@ -42,6 +42,17 @@ val myScalafix = projectMatrix
     },
   )
 
-commonSettings
+val root = project
+  .in(file("."))
+  .settings(
+    commonSettings
+  )
+  .aggregate(a2)
+  .aggregate(
+    Seq(
+      a1,
+      myScalafix
+    ).flatMap(_.projectRefs)*
+  )
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % System.getProperty("xuwei.scalafix-rules.version")
