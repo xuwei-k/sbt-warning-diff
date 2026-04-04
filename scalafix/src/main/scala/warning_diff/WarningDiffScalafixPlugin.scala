@@ -33,7 +33,7 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
       case _: CrossVersion.Binary =>
         s"""${q(m.organization)} %% ${q(m.name)} % ${q(m.revision)}"""
       case _: CrossVersion.Full =>
-        s"""${q(m.organization)} % ${q(m.name)} % ${q(m.revision)} cross CrossVersion.full"""
+        s"""(${q(m.organization)} % ${q(m.name)} % ${q(m.revision)}).cross(CrossVersion.full)"""
       case _ =>
         s"""${q(m.organization)} % ${q(m.name)} % ${q(m.revision)}"""
     }
