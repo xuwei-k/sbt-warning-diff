@@ -66,20 +66,20 @@ object WarningDiffPlugin extends AutoPlugin {
     )
   }
 
-  private[this] def dir = "warnings"
+  private[this] val dir = file("target") / "warnings"
 
   override def buildSettings: Seq[Def.Setting[?]] = Def.settings(
     LocalRootProject / warningsCurrentFile := {
-      (LocalRootProject / target).value / dir / "warnings.json"
+      dir / "warnings.json"
     },
     LocalRootProject / warningsDiffFile := {
-      (LocalRootProject / target).value / dir / "warnings.diff"
+      dir / "warnings.diff"
     },
     LocalRootProject / warningsPreviousFile := {
-      (LocalRootProject / target).value / dir / "warnings-previous.json"
+      dir / "warnings-previous.json"
     },
     LocalRootProject / warningsReviewdogDiagnosticFormatFile := {
-      (LocalRootProject / target).value / dir / "reviewdog.json"
+      dir / "reviewdog.json"
     },
     LocalRootProject / warningsReviewdogDiagnosticFormat := {
       val result = rdf.DiagnosticResult.fromWarnings(
