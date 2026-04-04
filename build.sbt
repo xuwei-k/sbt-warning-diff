@@ -143,6 +143,7 @@ val plugin = projectMatrix
   .jvmPlatform(
     Seq(Scala212, Scala3)
   )
+  .defaultAxes(VirtualAxis.jvm)
   .enablePlugins(SbtPlugin)
   .settings(
     pluginSettings,
