@@ -48,8 +48,9 @@ jobs:
            test
            publishLocal
            plugin2_12/scripted
+           plugin3/scripted
            scalafixPlugin2_12/scripted
-           "scalafixPlugin3/scripted t1/scala-3"
+           scalafixPlugin3/scripted
            warningsAll
   test:
     runs-on: ubuntu-latest

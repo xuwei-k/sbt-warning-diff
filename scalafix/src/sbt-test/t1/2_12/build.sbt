@@ -18,6 +18,8 @@ val myScalafix = project
     },
   )
 
-baseSettings
+val root = project.in(file("."))
+  .settings(baseSettings)
+  .aggregate(a1, myScalafix)
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % System.getProperty("xuwei.scalafix-rules.version")

@@ -97,7 +97,10 @@ object WarningDiffScalafixPlugin extends AutoPlugin {
     },
     ThisBuild / warningsScalafixVersion := _root_.scalafix.sbt.BuildInfo.scalafixVersion,
     ThisBuild / warningsScalafixScalaVersion := {
-      (ThisBuild / scalaBinaryVersion).value match {
+      // https://github.com/scalacenter/sbt-scalafix/blob/10d8fd87acf9f3dfd3d2c454285ab053d1844d56/src/main/scala/scalafix/sbt/ScalafixPlugin.scala#L278-L281
+      val v = scalaVersion.value.split('.').take(2).mkString(".")
+
+      v match {
         case "2.12" =>
           _root_.scalafix.sbt.BuildInfo.scala212
         case _ =>
