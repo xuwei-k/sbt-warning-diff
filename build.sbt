@@ -1,6 +1,6 @@
 import ReleaseTransformations.*
 
-def Scala212 = "2.12.21"
+def Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1version)
 def Scala213 = "2.13.18"
 def Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2version)
 
@@ -9,7 +9,7 @@ val tagName = Def.setting {
 }
 
 val tagOrHash = Def.setting {
-  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lineStream_!.head
+  if (isSnapshot.value) sys.process.Process("git rev-parse HEAD").lazyLines_!.head
   else tagName.value
 }
 
@@ -87,11 +87,12 @@ val commonSettings = Def.settings(
 )
 
 def sbt2version = "2.0.0-RC12"
+def sbt1version = "1.12.9"
 
 val sbtVersionForCross = Def.setting(
   scalaBinaryVersion.value match {
     case "2.12" =>
-      sbtVersion.value
+      sbt1version
     case _ =>
       sbt2version
   }
@@ -103,7 +104,7 @@ val pluginSettings = Def.settings(
   scriptedBufferLog := false,
   scriptedLaunchOpts ++= {
     val javaVmArgs = {
-      import scala.collection.JavaConverters.*
+      import scala.jdk.CollectionConverters.*
       java.lang.management.ManagementFactory.getRuntimeMXBean.getInputArguments.asScala.toList
     }
     javaVmArgs.filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dsbt.log.noformat").exists(a.startsWith))
@@ -123,9 +124,9 @@ val core = projectMatrix
       // Don't update. use same version as sbt
       scalaBinaryVersion.value match {
         case "3" =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbt2version, "3")
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbtVersion.value, "3")
         case _ =>
-          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbtVersion.value, "2.12")
+          "com.eed3si9n" %% "sjson-new-scalajson" % sjsonNewVersion(sbt1version, "2.12")
       }
     },
     buildInfoKeys := Seq[BuildInfoKey](version),
@@ -182,8 +183,10 @@ val fix = projectMatrix
     Seq(Scala212, Scala213)
   )
 
-commonSettings
-publish / skip := true
+val root = rootProject.autoAggregate.settings(
+  commonSettings,
+  publish / skip := true
+)
 
 lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.24"
 
