@@ -1,3 +1,4 @@
+libraryDependencies += "com.github.xuwei-k" %% "scala-version-from-sbt-version" % "0.1.0"
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
