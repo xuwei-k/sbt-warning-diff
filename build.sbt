@@ -185,7 +185,7 @@ val fix = projectMatrix
 commonSettings
 publish / skip := true
 
-lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.27"
+lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.28"
 
 ThisBuild / scalafixDependencies += xuweiScalafixRules
 
