@@ -23,6 +23,7 @@ jobs:
         java-version: 8
         distribution: temurin
     - run: sbt -v
+           --server
            scalafmtCheckAll
            scalafmtSbtCheck
            "all core2_12/test core2_13/test fix2_12/test fix2_13/test plugin2_12/test scalafixPlugin2_12/test"
@@ -42,6 +43,7 @@ jobs:
         java-version: 25
         distribution: temurin
     - run: sbt -v
+           --server
            scalafmtCheckAll
            scalafmtSbtCheck
            "scalafixAll --check"
@@ -65,6 +67,7 @@ jobs:
         java-version: 17
         distribution: temurin
     - run: sbt -v
+           --server
            scalafmtCheckAll
            scalafmtSbtCheck
            "scalafixAll --check"
