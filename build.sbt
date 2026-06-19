@@ -1,8 +1,9 @@
 import ReleaseTransformations.*
 
+def sbt2version = "2.0.0"
 def Scala212 = "2.12.21"
 def Scala213 = "2.13.18"
-def Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2version)
+val Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2version)
 
 val tagName = Def.setting {
   s"v${if (releaseUseGlobalVersion.value) (ThisBuild / version).value else version.value}"
@@ -85,8 +86,6 @@ val commonSettings = Def.settings(
   ),
   publishTo := (if (isSnapshot.value) None else localStaging.value)
 )
-
-def sbt2version = "2.0.0"
 
 val sbtVersionForCross = Def.setting(
   scalaBinaryVersion.value match {
