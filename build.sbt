@@ -7,7 +7,7 @@ def sbt2version = {
   p.getProperty("sbt.version").trim
 }
 def Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1version)
-def Scala213 = "2.13.18"
+def Scala213 = "3.9.0"
 val Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2version)
 
 val tagName = Def.setting {
