@@ -22,8 +22,8 @@ val tagOrHash = Def.setting {
 val commonSettings = Def.settings(
   startYear := Some(2022),
   organization := "com.github.xuwei-k",
-  homepage := Some(url("https://github.com/xuwei-k/sbt-warning-diff")),
-  licenses := Seq("MIT License" -> url("https://www.opensource.org/licenses/mit-license")),
+  homepage := Some(uri("https://github.com/xuwei-k/sbt-warning-diff")),
+  licenses := Seq("MIT License" -> uri("https://www.opensource.org/licenses/mit-license")),
   Compile / doc / scalacOptions ++= {
     Seq(
       "-sourcepath",
