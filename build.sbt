@@ -192,7 +192,7 @@ val root = rootProject.autoAggregate.settings(
   publish / skip := true
 )
 
-lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.30"
+lazy val xuweiScalafixRules = "com.github.xuwei-k" %% "scalafix-rules" % "0.6.31"
 
 ThisBuild / scalafixDependencies += xuweiScalafixRules
 
