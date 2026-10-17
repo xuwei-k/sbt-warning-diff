@@ -1,5 +1,5 @@
 val commonSettings = Def.settings(
-  scalaVersion := "2.13.18",
+  scalaVersion := "3.10.0",
   scalacOptions += "-deprecation"
 )
 
