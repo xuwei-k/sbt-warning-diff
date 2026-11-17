@@ -211,7 +211,6 @@ def reverseDependencyVersion(
   targetGroupId: String,
   targetArtifactId: String
 ): String = {
-  import lmcoursier.internal.shaded.coursier
   val dependency = coursier.Dependency(
     coursier.Module(
       coursier.Organization(
