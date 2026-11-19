@@ -1,6 +1,6 @@
 libraryDependencies += "com.github.xuwei-k" %% "scala-version-from-sbt-version" % "0.1.0"
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
-libraryDependencies += "io.get-coursier" %% "coursier" % "2.1.26"
+libraryDependencies += "io.get-coursier" %% "coursier" % "2.1.27"
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.14.0")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.6.0")
